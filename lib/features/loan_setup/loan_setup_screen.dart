@@ -281,10 +281,17 @@ class _LoanSetupScreenState extends ConsumerState<LoanSetupScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Interest Rate (% p.a.)', style: AppTypography.labelLarge),
+                      Flexible(
+                        child: Text(
+                          'Interest Rate (% p.a.)',
+                          style: AppTypography.labelLarge,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
                       // Floating / Fixed Toggle
                       SizedBox(
-                        width: 170,
+                        width: 155,
                         child: SegmentedControlPill<RateType>(
                           options: const [
                             SegmentOption(
@@ -316,7 +323,7 @@ class _LoanSetupScreenState extends ConsumerState<LoanSetupScreen> {
                         Row(
                           children: [
                             SizedBox(
-                              width: 80,
+                              width: 75,
                               child: TextField(
                                 controller: _rateController,
                                 keyboardType: const TextInputType.numberWithOptions(
@@ -336,20 +343,24 @@ class _LoanSetupScreenState extends ConsumerState<LoanSetupScreen> {
                             Text('%', style: AppTypography.headlineMedium),
                           ],
                         ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: AppColors.surfaceContainerHighest,
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Text(
-                            config.rateType == RateType.floating
-                                ? 'Repo-linked (RBI + 2.0%)'
-                                : 'Fixed Lock-in',
-                            style: AppTypography.labelSmall.copyWith(
-                              color: AppColors.tertiary,
-                              fontSize: 10,
+                        const SizedBox(width: 8),
+                        Flexible(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: AppColors.surfaceContainerHighest,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              config.rateType == RateType.floating
+                                  ? 'Repo-linked (RBI + 2.0%)'
+                                  : 'Fixed Lock-in',
+                              style: AppTypography.labelSmall.copyWith(
+                                color: AppColors.tertiary,
+                                fontSize: 10,
+                              ),
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ),
@@ -376,14 +387,25 @@ class _LoanSetupScreenState extends ConsumerState<LoanSetupScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Loan Tenure', style: AppTypography.labelLarge),
-                      Text(
-                        monthsRemainder == 0
-                            ? '$years Years (${config.tenureMonths} Months)'
-                            : '$years Y $monthsRemainder M (${config.tenureMonths} Months)',
-                        style: AppTypography.labelLarge.copyWith(
-                          color: AppColors.onSurface,
-                          fontWeight: FontWeight.w700,
+                      Flexible(
+                        child: Text(
+                          'Loan Tenure',
+                          style: AppTypography.labelLarge,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Flexible(
+                        child: Text(
+                          monthsRemainder == 0
+                              ? '$years Years (${config.tenureMonths} Mo)'
+                              : '$years Y $monthsRemainder M (${config.tenureMonths} Mo)',
+                          style: AppTypography.labelLarge.copyWith(
+                            color: AppColors.onSurface,
+                            fontWeight: FontWeight.w700,
+                          ),
+                          textAlign: TextAlign.right,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ],

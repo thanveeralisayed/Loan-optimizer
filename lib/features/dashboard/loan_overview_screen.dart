@@ -72,58 +72,67 @@ class LoanOverviewScreen extends ConsumerWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        children: [
-                          Container(
-                            width: 38,
-                            height: 38,
-                            decoration: BoxDecoration(
-                              color: AppColors.surfaceContainerHigh,
-                              borderRadius: BorderRadius.circular(8),
+                      Expanded(
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 38,
+                              height: 38,
+                              decoration: BoxDecoration(
+                                color: AppColors.surfaceContainerHigh,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Icon(
+                                Icons.account_balance,
+                                color: AppColors.primary,
+                                size: 20,
+                              ),
                             ),
-                            child: const Icon(
-                              Icons.account_balance,
-                              color: AppColors.primary,
-                              size: 20,
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    config.name,
-                                    style: AppTypography.headlineSmall.copyWith(
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 6),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 5, vertical: 1),
-                                    decoration: BoxDecoration(
-                                      color: AppColors.surfaceContainerHigh,
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    child: Text(
-                                      '•••• ${config.loanNumber}',
-                                      style: AppTypography.labelSmall.copyWith(
-                                        fontSize: 9,
+                                  Row(
+                                    children: [
+                                      Flexible(
+                                        child: Text(
+                                          config.name,
+                                          style: AppTypography.headlineSmall.copyWith(
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
                                       ),
-                                    ),
+                                      const SizedBox(width: 6),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 5, vertical: 1),
+                                        decoration: BoxDecoration(
+                                          color: AppColors.surfaceContainerHigh,
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                        child: Text(
+                                          '•••• ${config.loanNumber}',
+                                          style: AppTypography.labelSmall.copyWith(
+                                            fontSize: 9,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Text(
+                                    '${config.loanType.displayName} • ${config.rateType.displayName}',
+                                    style: AppTypography.bodySmall,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ],
                               ),
-                              Text(
-                                '${config.loanType.displayName} • ${config.rateType.displayName}',
-                                style: AppTypography.bodySmall,
-                              ),
-                            ],
-                          ),
-                        ],
+                            ),
+                          ],
+                        ),
                       ),
+                      const SizedBox(width: 8),
                       Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 3),
@@ -165,19 +174,19 @@ class LoanOverviewScreen extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.baseline,
-                    textBaseline: TextBaseline.alphabetic,
+                  Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
                       Text(
                         IndianCurrencyFormatter.format(outstandingBalance),
                         style: AppTypography.metricCurrency.copyWith(
-                          fontSize: 30,
+                          fontSize: 28,
                           fontWeight: FontWeight.w800,
                         ),
                       ),
                       const SizedBox(width: 8),
                       Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           const Icon(
                             Icons.trending_down,
@@ -231,41 +240,48 @@ class LoanOverviewScreen extends ConsumerWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Row(
-                          children: [
-                            Container(
-                              width: 32,
-                              height: 32,
-                              decoration: const BoxDecoration(
-                                color: AppColors.surfaceContainer,
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.calendar_today,
-                                size: 16,
-                                color: AppColors.primary,
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Upcoming EMI (Auto-Debit)',
-                                  style: AppTypography.labelSmall.copyWith(
-                                    fontSize: 10,
-                                  ),
+                        Expanded(
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 32,
+                                height: 32,
+                                decoration: const BoxDecoration(
+                                  color: AppColors.surfaceContainer,
+                                  shape: BoxShape.circle,
                                 ),
-                                Text(
-                                  IndianCurrencyFormatter.format(result.baseMonthlyEmi),
-                                  style: AppTypography.labelLarge.copyWith(
-                                    fontWeight: FontWeight.w700,
-                                  ),
+                                child: const Icon(
+                                  Icons.calendar_today,
+                                  size: 16,
+                                  color: AppColors.primary,
                                 ),
-                              ],
-                            ),
-                          ],
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Upcoming EMI (Auto-Debit)',
+                                      style: AppTypography.labelSmall.copyWith(
+                                        fontSize: 10,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    Text(
+                                      IndianCurrencyFormatter.format(result.baseMonthlyEmi),
+                                      style: AppTypography.labelLarge.copyWith(
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
+                        const SizedBox(width: 8),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
@@ -317,20 +333,25 @@ class LoanOverviewScreen extends ConsumerWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Debt Decay Trajectory',
-                            style: AppTypography.headlineSmall,
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            'Amortization progress • Year ${(currentMonthIndex ~/ 12) + 1} of ${config.tenureMonths ~/ 12}',
-                            style: AppTypography.bodySmall,
-                          ),
-                        ],
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Debt Decay Trajectory',
+                              style: AppTypography.headlineSmall,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              'Amortization progress • Year ${(currentMonthIndex ~/ 12) + 1} of ${config.tenureMonths ~/ 12}',
+                              style: AppTypography.bodySmall,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
                       ),
+                      const SizedBox(width: 8),
                       Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 4),
@@ -339,6 +360,7 @@ class LoanOverviewScreen extends ConsumerWidget {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
                             const Icon(
                               Icons.query_stats,

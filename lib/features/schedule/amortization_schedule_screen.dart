@@ -149,17 +149,21 @@ class _AmortizationScheduleScreenState
                           ),
                         ],
                       ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 3),
-                        decoration: BoxDecoration(
-                          color: AppColors.surfaceContainerHighest,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Text(
-                          '${result.optimizedTenureMonths} Months (${result.monthsSaved} Saved)',
-                          style: AppTypography.labelSmall.copyWith(
-                            color: AppColors.tertiary,
+                      const SizedBox(width: 8),
+                      Flexible(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: AppColors.surfaceContainerHighest,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            '${result.optimizedTenureMonths} Mo (${result.monthsSaved} Saved)',
+                            style: AppTypography.labelSmall.copyWith(
+                              color: AppColors.tertiary,
+                            ),
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       ),
@@ -202,15 +206,19 @@ class _AmortizationScheduleScreenState
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Schedule Trajectory',
-                  style: AppTypography.labelLarge.copyWith(
-                    fontWeight: FontWeight.w700,
+                Flexible(
+                  child: Text(
+                    'Schedule Trajectory',
+                    style: AppTypography.labelLarge.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
+                const SizedBox(width: 8),
                 Text(
                   _viewMode == ScheduleViewMode.yearly
-                      ? 'Tap row to expand months'
+                      ? 'Tap row to expand'
                       : '${result.optimizedSchedule.length} Payments',
                   style: AppTypography.labelSmall.copyWith(
                     color: AppColors.primary,
@@ -251,53 +259,52 @@ class _AmortizationScheduleScreenState
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    width: 32,
-                                    height: 32,
-                                    decoration: const BoxDecoration(
-                                      color: AppColors.surfaceContainerLow,
-                                      shape: BoxShape.circle,
+                              Expanded(
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      width: 32,
+                                      height: 32,
+                                      decoration: const BoxDecoration(
+                                        color: AppColors.surfaceContainerLow,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Icon(
+                                        yearSummary.isCompleted
+                                            ? Icons.check_circle
+                                            : Icons.schedule,
+                                        size: 16,
+                                        color: yearSummary.isCompleted
+                                            ? AppColors.tertiary
+                                            : AppColors.outline,
+                                      ),
                                     ),
-                                    child: Icon(
-                                      yearSummary.isCompleted
-                                          ? Icons.check_circle
-                                          : Icons.schedule,
-                                      size: 16,
-                                      color: yearSummary.isCompleted
-                                          ? AppColors.tertiary
-                                          : AppColors.outline,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
+                                    const SizedBox(width: 10),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            'Year ${yearSummary.yearIndex}',
+                                            'Year ${yearSummary.yearIndex} (${yearSummary.yearNumber})',
                                             style: AppTypography.headlineSmall
-                                                .copyWith(fontSize: 16),
+                                                .copyWith(fontSize: 15),
+                                            overflow: TextOverflow.ellipsis,
                                           ),
-                                          const SizedBox(width: 6),
+                                          const SizedBox(height: 2),
                                           Text(
-                                            '(${yearSummary.yearNumber})',
-                                            style: AppTypography.labelSmall,
+                                            'P: ${IndianCurrencyFormatter.formatCompact(yearSummary.totalPrincipalPaid)} • Int: ${IndianCurrencyFormatter.formatCompact(yearSummary.totalInterestPaid)}',
+                                            style: AppTypography.bodySmall.copyWith(
+                                              fontSize: 10,
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
                                           ),
                                         ],
                                       ),
-                                      Text(
-                                        'Principal: ${IndianCurrencyFormatter.formatCompact(yearSummary.totalPrincipalPaid)} • Int: ${IndianCurrencyFormatter.formatCompact(yearSummary.totalInterestPaid)}',
-                                        style: AppTypography.bodySmall.copyWith(
-                                          fontSize: 11,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                                    ),
+                                  ],
+                                ),
                               ),
+                              const SizedBox(width: 8),
                               Row(
                                 children: [
                                   Column(
@@ -476,6 +483,8 @@ class _AmortizationScheduleScreenState
                                 fontSize: 11,
                                 color: AppColors.tertiary,
                               ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                             Text(
                               'Interest: ${IndianCurrencyFormatter.format(row.interestPaid)}',
@@ -483,6 +492,8 @@ class _AmortizationScheduleScreenState
                                 fontSize: 11,
                                 color: AppColors.error,
                               ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ],
                         ),

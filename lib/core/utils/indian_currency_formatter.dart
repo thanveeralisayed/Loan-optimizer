@@ -59,7 +59,12 @@ class IndianCurrencyFormatter {
   /// Parses an Indian formatted string back to double:
   /// e.g. "₹50,00,000" -> 5000000.0
   static double parse(String value) {
-    final cleaned = value.replaceAll('₹', '').replaceAll(',', '').trim();
+    final cleaned = value
+        .replaceAll('₹', '')
+        .replaceAll('Rs.', '')
+        .replaceAll('INR', '')
+        .replaceAll(',', '')
+        .trim();
     if (cleaned.isEmpty) return 0.0;
     return double.tryParse(cleaned) ?? 0.0;
   }
@@ -67,6 +72,7 @@ class IndianCurrencyFormatter {
   /// Converts a numeric amount to Indian English words:
   /// e.g. 5000000 -> "Fifty Lakhs Rupees"
   /// e.g. 4265400 -> "Forty Two Lakhs Sixty Five Thousand Four Hundred Rupees"
+  /// e.g. 1000000000 -> "One Hundred Crores Rupees"
   static String toWords(num amount) {
     if (amount == 0) return 'Zero Rupees';
     final isNegative = amount < 0;
@@ -89,13 +95,13 @@ class IndianCurrencyFormatter {
     final remainder = n;
 
     if (crores > 0) {
-      parts.add('${_twoDigitWords(crores)} Crore${crores > 1 ? 's' : ''}');
+      parts.add('${_convertChunk(crores)} Crore${crores > 1 ? 's' : ''}');
     }
     if (lakhs > 0) {
-      parts.add('${_twoDigitWords(lakhs)} Lakh${lakhs > 1 ? 's' : ''}');
+      parts.add('${_convertChunk(lakhs)} Lakh${lakhs > 1 ? 's' : ''}');
     }
     if (thousands > 0) {
-      parts.add('${_twoDigitWords(thousands)} Thousand');
+      parts.add('${_convertChunk(thousands)} Thousand');
     }
     if (hundreds > 0) {
       parts.add('${_twoDigitWords(hundreds)} Hundred');
@@ -106,6 +112,23 @@ class IndianCurrencyFormatter {
 
     final prefix = isNegative ? 'Minus ' : '';
     return '$prefix${parts.join(' ')} Rupees';
+  }
+
+  /// Converts numbers up to 9999 to words for chunked Indian groups
+  static String _convertChunk(int n) {
+    if (n < 100) {
+      return _twoDigitWords(n);
+    }
+    final hundreds = n ~/ 100;
+    final rem = n % 100;
+    final list = <String>[];
+    if (hundreds > 0) {
+      list.add('${_twoDigitWords(hundreds)} Hundred');
+    }
+    if (rem > 0) {
+      list.add(_twoDigitWords(rem));
+    }
+    return list.join(' ');
   }
 
   static String _twoDigitWords(int n) {

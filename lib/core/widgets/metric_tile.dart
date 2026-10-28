@@ -43,20 +43,25 @@ class MetricTile extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                label.toUpperCase(),
-                style: AppTypography.labelSmall.copyWith(
-                  color: AppColors.onSurfaceVariant,
-                  fontSize: 10,
-                  letterSpacing: 0.6,
+              Flexible(
+                child: Text(
+                  label.toUpperCase(),
+                  style: AppTypography.labelSmall.copyWith(
+                    color: AppColors.onSurfaceVariant,
+                    fontSize: 10,
+                    letterSpacing: 0.6,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
-              if (icon != null)
+              if (icon != null) ...[
+                const SizedBox(width: 4),
                 Icon(
                   icon,
                   size: 16,
                   color: valueColor ?? AppColors.tertiary,
                 ),
+              ],
             ],
           ),
           const SizedBox(height: 4),

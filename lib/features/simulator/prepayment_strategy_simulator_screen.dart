@@ -96,36 +96,44 @@ class _PrepaymentStrategySimulatorScreenState
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 3),
-                            decoration: BoxDecoration(
-                              color: AppColors.surfaceContainerLowest,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 6,
-                                  height: 6,
-                                  decoration: const BoxDecoration(
-                                    color: AppColors.tertiary,
-                                    shape: BoxShape.circle,
+                          Flexible(
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 3),
+                              decoration: BoxDecoration(
+                                color: AppColors.surfaceContainerLowest,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    width: 6,
+                                    height: 6,
+                                    decoration: const BoxDecoration(
+                                      color: AppColors.tertiary,
+                                      shape: BoxShape.circle,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  'ALGORITHMIC OPTIMIZATION',
-                                  style: AppTypography.labelSmall.copyWith(
-                                    color: AppColors.tertiary,
-                                    fontSize: 9,
-                                    letterSpacing: 0.5,
+                                  const SizedBox(width: 6),
+                                  Flexible(
+                                    child: Text(
+                                      'ALGORITHMIC OPTIMIZATION',
+                                      style: AppTypography.labelSmall.copyWith(
+                                        color: AppColors.tertiary,
+                                        fontSize: 9,
+                                        letterSpacing: 0.5,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
+                          const SizedBox(width: 8),
                           Row(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
                               const Icon(
                                 Icons.bolt,
@@ -156,15 +164,14 @@ class _PrepaymentStrategySimulatorScreenState
                         ),
                       ),
                       const SizedBox(height: 4),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.baseline,
-                        textBaseline: TextBaseline.alphabetic,
+                      Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
                           Text(
                             IndianCurrencyFormatter.format(result.totalInterestSaved),
                             style: AppTypography.metricCurrency.copyWith(
                               color: AppColors.tertiary,
-                              fontSize: 30,
+                              fontSize: 28,
                               fontWeight: FontWeight.w800,
                             ),
                           ),
@@ -210,10 +217,14 @@ class _PrepaymentStrategySimulatorScreenState
                                         color: AppColors.tertiary,
                                       ),
                                       const SizedBox(width: 4),
-                                      Text(
-                                        tenureSavedText,
-                                        style: AppTypography.headlineSmall.copyWith(
-                                          fontWeight: FontWeight.w700,
+                                      Flexible(
+                                        child: Text(
+                                          tenureSavedText,
+                                          style: AppTypography.headlineSmall.copyWith(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
                                         ),
                                       ),
                                     ],
@@ -223,6 +234,7 @@ class _PrepaymentStrategySimulatorScreenState
                                     style: AppTypography.bodySmall.copyWith(
                                       fontSize: 10,
                                     ),
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ],
                               ),
@@ -245,6 +257,7 @@ class _PrepaymentStrategySimulatorScreenState
                                     style: AppTypography.labelSmall.copyWith(
                                       fontSize: 10,
                                     ),
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                   const SizedBox(height: 4),
                                   Row(
@@ -255,11 +268,15 @@ class _PrepaymentStrategySimulatorScreenState
                                         color: AppColors.secondary,
                                       ),
                                       const SizedBox(width: 4),
-                                      Text(
-                                        optimizedEndFormat,
-                                        style: AppTypography.headlineSmall.copyWith(
-                                          color: AppColors.secondary,
-                                          fontWeight: FontWeight.w700,
+                                      Flexible(
+                                        child: Text(
+                                          optimizedEndFormat,
+                                          style: AppTypography.headlineSmall.copyWith(
+                                            fontSize: 18,
+                                            color: AppColors.secondary,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
                                         ),
                                       ),
                                     ],
@@ -271,6 +288,7 @@ class _PrepaymentStrategySimulatorScreenState
                                       decoration: TextDecoration.lineThrough,
                                       color: AppColors.outline,
                                     ),
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ],
                               ),
@@ -285,16 +303,24 @@ class _PrepaymentStrategySimulatorScreenState
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            'Payoff Trajectory',
-                            style: AppTypography.labelSmall.copyWith(fontSize: 10),
+                          Flexible(
+                            child: Text(
+                              'Payoff Trajectory',
+                              style: AppTypography.labelSmall.copyWith(fontSize: 10),
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
-                          Text(
-                            '${payoffPct.toStringAsFixed(1)}% of original time',
-                            style: AppTypography.labelSmall.copyWith(
-                              color: AppColors.tertiary,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 10,
+                          const SizedBox(width: 8),
+                          Flexible(
+                            child: Text(
+                              '${payoffPct.toStringAsFixed(1)}% of original time',
+                              style: AppTypography.labelSmall.copyWith(
+                                color: AppColors.tertiary,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 10,
+                              ),
+                              textAlign: TextAlign.right,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ],
@@ -386,7 +412,14 @@ class _PrepaymentStrategySimulatorScreenState
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Active Accelerators', style: AppTypography.headlineSmall),
+                    Flexible(
+                      child: Text(
+                        'Active Accelerators',
+                        style: AppTypography.headlineSmall,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
                     Text(
                       '3 Knobs Engaged',
                       style: AppTypography.labelSmall.copyWith(
@@ -425,16 +458,20 @@ class _PrepaymentStrategySimulatorScreenState
                             ),
                           ),
                           const SizedBox(width: 10),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('One-Time Lump Sum',
-                                  style: AppTypography.labelLarge.copyWith(
-                                    fontWeight: FontWeight.w700,
-                                  )),
-                              Text('Inject surplus liquidity (e.g. bonus)',
-                                  style: AppTypography.bodySmall),
-                            ],
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('One-Time Lump Sum',
+                                    style: AppTypography.labelLarge.copyWith(
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                    overflow: TextOverflow.ellipsis),
+                                Text('Inject surplus liquidity (e.g. bonus)',
+                                    style: AppTypography.bodySmall,
+                                    overflow: TextOverflow.ellipsis),
+                              ],
+                            ),
                           ),
                         ],
                       ),
@@ -513,35 +550,42 @@ class _PrepaymentStrategySimulatorScreenState
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
-                            children: [
-                              Container(
-                                width: 36,
-                                height: 36,
-                                decoration: BoxDecoration(
-                                  color: AppColors.surfaceContainerHigh,
-                                  borderRadius: BorderRadius.circular(8),
+                          Expanded(
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 36,
+                                  height: 36,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.surfaceContainerHigh,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: const Icon(
+                                    Icons.trending_up,
+                                    color: AppColors.tertiary,
+                                    size: 18,
+                                  ),
                                 ),
-                                child: const Icon(
-                                  Icons.trending_up,
-                                  color: AppColors.tertiary,
-                                  size: 18,
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text('Stepped EMI Step-up',
+                                          style: AppTypography.labelLarge.copyWith(
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                          overflow: TextOverflow.ellipsis),
+                                      Text('Annual increase with salary hike',
+                                          style: AppTypography.bodySmall,
+                                          overflow: TextOverflow.ellipsis),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(width: 10),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Stepped EMI Step-up',
-                                      style: AppTypography.labelLarge.copyWith(
-                                        fontWeight: FontWeight.w700,
-                                      )),
-                                  Text('Annual increase with salary hike',
-                                      style: AppTypography.bodySmall),
-                                ],
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
+                          const SizedBox(width: 8),
                           Text(
                             '+${plan.steppedEmiPercentage.toStringAsFixed(0)}% / yr',
                             style: AppTypography.labelLarge.copyWith(

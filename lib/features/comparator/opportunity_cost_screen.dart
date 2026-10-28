@@ -52,23 +52,28 @@ class OpportunityCostScreen extends ConsumerWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 3),
-                        decoration: BoxDecoration(
-                          color: AppColors.surfaceContainerHigh,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          'QUANT DECISION MATRIX',
-                          style: AppTypography.labelSmall.copyWith(
-                            color: AppColors.secondary,
-                            fontSize: 9,
-                            letterSpacing: 0.5,
+                      Flexible(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: AppColors.surfaceContainerHigh,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            'QUANT DECISION MATRIX',
+                            style: AppTypography.labelSmall.copyWith(
+                              color: AppColors.secondary,
+                              fontSize: 9,
+                              letterSpacing: 0.5,
+                            ),
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       ),
+                      const SizedBox(width: 8),
                       Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           const Icon(
                             Icons.verified,
@@ -105,43 +110,49 @@ class OpportunityCostScreen extends ConsumerWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Row(
-                          children: [
-                            Container(
-                              width: 32,
-                              height: 32,
-                              decoration: BoxDecoration(
-                                color: AppColors.surfaceContainerHigh,
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: const Icon(
-                                Icons.account_balance_wallet,
-                                size: 16,
-                                color: AppColors.primary,
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Allocated Surplus Pool',
-                                  style: AppTypography.labelSmall.copyWith(
-                                    fontSize: 10,
-                                    color: AppColors.onSurfaceVariant,
-                                  ),
+                        Expanded(
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 32,
+                                height: 32,
+                                decoration: BoxDecoration(
+                                  color: AppColors.surfaceContainerHigh,
+                                  borderRadius: BorderRadius.circular(6),
                                 ),
-                                Text(
-                                  '${IndianCurrencyFormatter.format(params.lumpSumSurplus)} + ${IndianCurrencyFormatter.format(params.monthlySipSurplus)}/mo',
-                                  style: AppTypography.labelMedium.copyWith(
-                                    color: AppColors.onSurface,
-                                    fontWeight: FontWeight.w700,
-                                  ),
+                                child: const Icon(
+                                  Icons.account_balance_wallet,
+                                  size: 16,
+                                  color: AppColors.primary,
                                 ),
-                              ],
-                            ),
-                          ],
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Allocated Surplus Pool',
+                                      style: AppTypography.labelSmall.copyWith(
+                                        fontSize: 10,
+                                        color: AppColors.onSurfaceVariant,
+                                      ),
+                                    ),
+                                    Text(
+                                      '${IndianCurrencyFormatter.format(params.lumpSumSurplus)} + ${IndianCurrencyFormatter.format(params.monthlySipSurplus)}/mo',
+                                      style: AppTypography.labelMedium.copyWith(
+                                        color: AppColors.onSurface,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
+                        const SizedBox(width: 8),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
@@ -196,30 +207,37 @@ class OpportunityCostScreen extends ConsumerWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        children: [
-                          Container(
-                            width: 8,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              color: isPrepayWinner
-                                  ? AppColors.tertiary
-                                  : AppColors.secondary,
-                              shape: BoxShape.circle,
+                      Flexible(
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 8,
+                              height: 8,
+                              decoration: BoxDecoration(
+                                color: isPrepayWinner
+                                    ? AppColors.tertiary
+                                    : AppColors.secondary,
+                                shape: BoxShape.circle,
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            'MATHEMATICAL VERDICT',
-                            style: AppTypography.labelSmall.copyWith(
-                              color: isPrepayWinner
-                                  ? AppColors.tertiary
-                                  : AppColors.secondary,
-                              letterSpacing: 0.8,
+                            const SizedBox(width: 6),
+                            Flexible(
+                              child: Text(
+                                'MATHEMATICAL VERDICT',
+                                style: AppTypography.labelSmall.copyWith(
+                                  color: isPrepayWinner
+                                      ? AppColors.tertiary
+                                      : AppColors.secondary,
+                                  letterSpacing: 0.8,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
+                      const SizedBox(width: 8),
                       Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 6, vertical: 2),
@@ -261,9 +279,8 @@ class OpportunityCostScreen extends ConsumerWidget {
                               ],
                             ),
                             const SizedBox(height: 4),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.baseline,
-                              textBaseline: TextBaseline.alphabetic,
+                            Wrap(
+                              crossAxisAlignment: WrapCrossAlignment.center,
                               children: [
                                 Text(
                                   '+${IndianCurrencyFormatter.format(result.netAdvantage)}',
@@ -271,7 +288,7 @@ class OpportunityCostScreen extends ConsumerWidget {
                                     color: isPrepayWinner
                                         ? AppColors.tertiary
                                         : AppColors.secondary,
-                                    fontSize: 26,
+                                    fontSize: 24,
                                     fontWeight: FontWeight.w800,
                                   ),
                                 ),
@@ -357,44 +374,62 @@ class OpportunityCostScreen extends ConsumerWidget {
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'SCENARIO BREAKDOWN',
-                            style: AppTypography.labelSmall.copyWith(
-                              letterSpacing: 0.6,
-                              color: AppColors.outline,
+                      Flexible(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'SCENARIO BREAKDOWN',
+                              style: AppTypography.labelSmall.copyWith(
+                                letterSpacing: 0.6,
+                                color: AppColors.outline,
+                              ),
                             ),
-                          ),
-                          Text('Risk-Adjusted Value',
-                              style: AppTypography.headlineSmall),
-                        ],
+                            Text(
+                              'Risk-Adjusted Value',
+                              style: AppTypography.headlineSmall,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
                       ),
-                      Row(
+                      const SizedBox(width: 8),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Container(
-                            width: 8,
-                            height: 8,
-                            decoration: const BoxDecoration(
-                              color: AppColors.tertiary,
-                              shape: BoxShape.circle,
-                            ),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                width: 8,
+                                height: 8,
+                                decoration: const BoxDecoration(
+                                  color: AppColors.tertiary,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              Text('Loan Saved', style: AppTypography.labelSmall),
+                            ],
                           ),
-                          const SizedBox(width: 4),
-                          Text('Loan Saved', style: AppTypography.labelSmall),
-                          const SizedBox(width: 10),
-                          Container(
-                            width: 8,
-                            height: 8,
-                            decoration: const BoxDecoration(
-                              color: AppColors.secondary,
-                              shape: BoxShape.circle,
-                            ),
+                          const SizedBox(height: 2),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                width: 8,
+                                height: 8,
+                                decoration: const BoxDecoration(
+                                  color: AppColors.secondary,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              Text('Post-Tax MF', style: AppTypography.labelSmall),
+                            ],
                           ),
-                          const SizedBox(width: 4),
-                          Text('Post-Tax MF', style: AppTypography.labelSmall),
                         ],
                       ),
                     ],
@@ -414,8 +449,14 @@ class OpportunityCostScreen extends ConsumerWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Option A: Guaranteed Savings',
-                                style: AppTypography.labelMedium),
+                            Flexible(
+                              child: Text(
+                                'Option A: Guaranteed Savings',
+                                style: AppTypography.labelMedium,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
                             Text(
                               IndianCurrencyFormatter.format(result.loanInterestSaved),
                               style: AppTypography.labelLarge.copyWith(
@@ -446,8 +487,14 @@ class OpportunityCostScreen extends ConsumerWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Option B: Post-Tax Equity Profit',
-                                style: AppTypography.labelMedium),
+                            Flexible(
+                              child: Text(
+                                'Option B: Post-Tax Equity Profit',
+                                style: AppTypography.labelMedium,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
                             Text(
                               IndianCurrencyFormatter.format(
                                   result.netInvestmentProfit),
@@ -495,13 +542,23 @@ class OpportunityCostScreen extends ConsumerWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Expected Market Return',
-                          style: AppTypography.labelLarge),
-                      Text(
-                        '${params.expectedAnnualReturn.toStringAsFixed(1)}% CAGR',
-                        style: AppTypography.labelLarge.copyWith(
-                          color: AppColors.secondary,
-                          fontWeight: FontWeight.w700,
+                      Flexible(
+                        child: Text(
+                          'Expected Market Return',
+                          style: AppTypography.labelLarge,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Flexible(
+                        child: Text(
+                          '${params.expectedAnnualReturn.toStringAsFixed(1)}% CAGR',
+                          style: AppTypography.labelLarge.copyWith(
+                            color: AppColors.secondary,
+                            fontWeight: FontWeight.w700,
+                          ),
+                          textAlign: TextAlign.right,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ],
@@ -528,13 +585,23 @@ class OpportunityCostScreen extends ConsumerWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Investment Horizon',
-                          style: AppTypography.labelLarge),
-                      Text(
-                        '$horizonYears Years (${params.horizonMonths} Months)',
-                        style: AppTypography.labelLarge.copyWith(
-                          color: AppColors.onSurface,
-                          fontWeight: FontWeight.w700,
+                      Flexible(
+                        child: Text(
+                          'Investment Horizon',
+                          style: AppTypography.labelLarge,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Flexible(
+                        child: Text(
+                          '$horizonYears Years (${params.horizonMonths} Mo)',
+                          style: AppTypography.labelLarge.copyWith(
+                            color: AppColors.onSurface,
+                            fontWeight: FontWeight.w700,
+                          ),
+                          textAlign: TextAlign.right,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ],

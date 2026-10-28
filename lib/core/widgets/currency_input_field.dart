@@ -29,19 +29,28 @@ class CurrencyInputField extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              label,
-              style: AppTypography.labelLarge.copyWith(
-                color: AppColors.onSurfaceVariant,
+            Flexible(
+              child: Text(
+                label,
+                style: AppTypography.labelLarge.copyWith(
+                  color: AppColors.onSurfaceVariant,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
-            if (subtitle != null)
-              Text(
-                subtitle!,
-                style: AppTypography.labelSmall.copyWith(
-                  color: AppColors.tertiary,
+            if (subtitle != null) ...[
+              const SizedBox(width: 8),
+              Flexible(
+                child: Text(
+                  subtitle!,
+                  style: AppTypography.labelSmall.copyWith(
+                    color: AppColors.tertiary,
+                  ),
+                  textAlign: TextAlign.right,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
+            ],
           ],
         ),
         const SizedBox(height: 6),

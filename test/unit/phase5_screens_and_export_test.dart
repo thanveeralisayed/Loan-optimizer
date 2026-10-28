@@ -84,7 +84,7 @@ void main() {
       expect(find.text('TOTAL INTEREST'), findsOneWidget);
       expect(find.text('TOTAL OUTFLOW'), findsOneWidget);
       expect(find.text('Schedule Trajectory'), findsOneWidget);
-      expect(find.text('Year 1'), findsOneWidget);
+      expect(find.text('Year 1 (2022)'), findsOneWidget);
     });
 
     testWidgets('Tapping CSV export displays confirmation snackbar',

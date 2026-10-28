@@ -54,10 +54,13 @@ class DualToneProgressBar extends StatelessWidget {
         ),
         if (showLabels) ...[
           const SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            runSpacing: 4,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Container(
                     width: 8,
@@ -80,7 +83,9 @@ class DualToneProgressBar extends StatelessWidget {
                   ),
                 ],
               ),
+              const SizedBox(width: 8),
               Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Container(
                     width: 8,
