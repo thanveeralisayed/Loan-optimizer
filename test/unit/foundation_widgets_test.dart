@@ -33,6 +33,82 @@ void main() {
       expect(find.byIcon(Icons.account_balance), findsOneWidget);
     });
 
+    testWidgets('AppHeader notifications button opens notifications sheet by default',
+        (tester) async {
+      await tester.pumpWidget(wrapWidget(
+        const AppHeader(title: 'LoanOpt'),
+      ));
+
+      // Notification icon is present
+      final notifFinder = find.byIcon(Icons.notifications_none);
+      expect(notifFinder, findsOneWidget);
+
+      // Tap notification bell
+      await tester.tap(notifFinder);
+      await tester.pumpAndSettle();
+
+      // BottomSheet is displayed with alerts
+      expect(find.text('Notifications & Alerts'), findsOneWidget);
+      expect(find.text('Upcoming EMI (₹43,391)'), findsOneWidget);
+      expect(find.text('Accelerate Debt Freedom'), findsOneWidget);
+      expect(find.text('RBI Repo Rate Policy'), findsOneWidget);
+
+      // Dismiss the sheet
+      await tester.tap(find.text('Dismiss'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Notifications & Alerts'), findsNothing);
+    });
+
+    testWidgets('AppHeader profile button opens profile sheet by default',
+        (tester) async {
+      await tester.pumpWidget(wrapWidget(
+        const AppHeader(title: 'LoanOpt'),
+      ));
+
+      // Profile icon is present
+      final profileFinder = find.byIcon(Icons.person);
+      expect(profileFinder, findsOneWidget);
+
+      // Tap profile icon
+      await tester.tap(profileFinder);
+      await tester.pumpAndSettle();
+
+      // Profile bottom sheet is displayed
+      expect(find.text('Arjun Sharma'), findsOneWidget);
+      expect(find.text('Prime Home Loan (•••• 8492)'), findsOneWidget);
+      expect(find.text('₹50,00,000'), findsOneWidget);
+      expect(find.textContaining('100% Offline Engine'), findsOneWidget);
+
+      // Close the sheet
+      await tester.tap(find.text('Close'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Arjun Sharma'), findsNothing);
+    });
+
+    testWidgets('AppHeader invokes custom callbacks when provided',
+        (tester) async {
+      var notifTapped = false;
+      var profileTapped = false;
+
+      await tester.pumpWidget(wrapWidget(
+        AppHeader(
+          title: 'LoanOpt',
+          onNotificationsTap: () => notifTapped = true,
+          onProfileTap: () => profileTapped = true,
+        ),
+      ));
+
+      await tester.tap(find.byIcon(Icons.notifications_none));
+      await tester.pump();
+      expect(notifTapped, isTrue);
+
+      await tester.tap(find.byIcon(Icons.person));
+      await tester.pump();
+      expect(profileTapped, isTrue);
+    });
+
     testWidgets('DualToneProgressBar renders principal and interest properly',
         (tester) async {
       await tester.pumpWidget(wrapWidget(
