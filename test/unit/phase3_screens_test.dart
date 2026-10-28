@@ -1,3 +1,4 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -123,6 +124,26 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(scheduleFinder);
       expect(scheduleTapped, isTrue);
+    });
+
+    testWidgets('Debt Decay Trajectory chart renders with touch tooltip formatting',
+        (tester) async {
+      await tester.pumpWidget(wrapWithProvider(const LoanOverviewScreen()));
+      await tester.pumpAndSettle();
+
+      final chartFinder = find.byType(LineChart);
+      expect(chartFinder, findsOneWidget);
+      await tester.ensureVisible(chartFinder);
+
+      // Perform touch on chart to trigger touch tooltip
+      final center = tester.getCenter(chartFinder);
+      final gesture = await tester.createGesture();
+      await gesture.down(center);
+      await tester.pump();
+      await gesture.up();
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
     });
   });
 }

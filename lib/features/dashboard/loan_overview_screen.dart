@@ -553,6 +553,75 @@ class LoanOverviewScreen extends ConsumerWidget {
 
     return LineChart(
       LineChartData(
+        lineTouchData: LineTouchData(
+          enabled: true,
+          handleBuiltInTouches: true,
+          touchTooltipData: LineTouchTooltipData(
+            getTooltipColor: (touchedSpot) => AppColors.surfaceContainerHigh,
+            tooltipBorderRadius: BorderRadius.circular(8),
+            tooltipBorder: const BorderSide(
+              color: AppColors.borderLight,
+              width: 1,
+            ),
+            tooltipPadding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 8,
+            ),
+            tooltipMargin: 12,
+            fitInsideHorizontally: true,
+            fitInsideVertically: true,
+            getTooltipItems: (List<LineBarSpot> touchedSpots) {
+              return touchedSpots.map((spot) {
+                final year = spot.x.round();
+                final balanceLakhs = spot.y;
+                final balanceFormatted = balanceLakhs >= 100
+                    ? '₹${(balanceLakhs / 100).toStringAsFixed(2)} Cr'
+                    : '₹${balanceLakhs.toStringAsFixed(2)} L';
+
+                return LineTooltipItem(
+                  'Year $year\n',
+                  const TextStyle(
+                    color: AppColors.onSurfaceVariant,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  children: [
+                    TextSpan(
+                      text: balanceFormatted,
+                      style: const TextStyle(
+                        color: AppColors.tertiary,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ],
+                );
+              }).toList();
+            },
+          ),
+          getTouchedSpotIndicator:
+              (LineChartBarData barData, List<int> spotIndexes) {
+            return spotIndexes.map((index) {
+              return TouchedSpotIndicatorData(
+                FlLine(
+                  color: AppColors.tertiary.withValues(alpha: 0.5),
+                  strokeWidth: 1.5,
+                  dashArray: [4, 4],
+                ),
+                FlDotData(
+                  show: true,
+                  getDotPainter: (spot, percent, bar, idx) =>
+                      FlDotCirclePainter(
+                    radius: 5,
+                    color: AppColors.tertiary,
+                    strokeWidth: 2,
+                    strokeColor: AppColors.surface,
+                  ),
+                ),
+              );
+            }).toList();
+          },
+        ),
         gridData: FlGridData(
           show: true,
           drawVerticalLine: false,
@@ -563,17 +632,20 @@ class LoanOverviewScreen extends ConsumerWidget {
           ),
         ),
         titlesData: FlTitlesData(
-          rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          rightTitles:
+              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles:
+              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
           leftTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
-              reservedSize: 32,
+              reservedSize: 34,
               getTitlesWidget: (val, meta) => Text(
                 '₹${val.toInt()}L',
                 style: const TextStyle(
                   color: AppColors.onSurfaceVariant,
-                  fontSize: 9,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ),
@@ -581,12 +653,13 @@ class LoanOverviewScreen extends ConsumerWidget {
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
-              reservedSize: 20,
+              reservedSize: 22,
               getTitlesWidget: (val, meta) => Text(
                 'Y${val.toInt()}',
                 style: const TextStyle(
                   color: AppColors.onSurfaceVariant,
-                  fontSize: 9,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ),
@@ -597,12 +670,24 @@ class LoanOverviewScreen extends ConsumerWidget {
           LineChartBarData(
             spots: spots,
             isCurved: true,
-            color: AppColors.accentIndigo,
+            gradient: const LinearGradient(
+              colors: [
+                Color(0xFF818CF8), // Vibrant Indigo
+                AppColors.secondary, // Crisp Lavender
+              ],
+            ),
             barWidth: 3,
             dotData: const FlDotData(show: false),
             belowBarData: BarAreaData(
               show: true,
-              color: AppColors.accentIndigo.withValues(alpha: 0.15),
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  const Color(0xFF818CF8).withValues(alpha: 0.25),
+                  const Color(0xFF818CF8).withValues(alpha: 0.0),
+                ],
+              ),
             ),
           ),
         ],
