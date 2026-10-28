@@ -9,6 +9,7 @@ import '../../core/widgets/quick_amount_chip.dart';
 import '../../core/widgets/segmented_control_pill.dart';
 import '../../models/loan_config.dart';
 import '../../providers/loan_provider.dart';
+import '../strategy/widgets/strategy_preset_selector.dart';
 
 class LoanSetupScreen extends ConsumerStatefulWidget {
   final VoidCallback? onSaved;
@@ -447,6 +448,11 @@ class _LoanSetupScreenState extends ConsumerState<LoanSetupScreen> {
                 ],
               ),
             ),
+
+            const SizedBox(height: 16),
+
+            // Accelerated Payoff Strategy & Blueprint Presets (Stitch Design)
+            const StrategyPresetSelector(),
 
             const SizedBox(height: 24),
 

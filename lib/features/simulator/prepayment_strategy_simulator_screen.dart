@@ -11,6 +11,8 @@ import '../../core/widgets/segmented_control_pill.dart';
 import '../../core/widgets/sticky_bottom_dock.dart';
 import '../../models/prepayment_plan.dart';
 import '../../providers/loan_provider.dart';
+import '../strategy/widgets/save_strategy_dialog.dart';
+import '../strategy/widgets/saved_strategy_carousel.dart';
 
 class PrepaymentStrategySimulatorScreen extends ConsumerStatefulWidget {
   final VoidCallback? onApply;
@@ -406,6 +408,21 @@ class _PrepaymentStrategySimulatorScreenState
                   ),
                 ),
 
+                const SizedBox(height: 20),
+
+                // Saved Strategies Horizontal Carousel (Stitch Design)
+                SavedStrategyCarousel(
+                  onStrategyLoaded: () {
+                    final current = ref.read(prepaymentPlanProvider);
+                    final lump = current.lumpSums.isNotEmpty
+                        ? current.lumpSums.first.amount
+                        : 0.0;
+                    _lumpSumController.text = lump > 0
+                        ? IndianCurrencyFormatter.formatWithoutSymbol(lump)
+                        : '';
+                  },
+                ),
+
                 const SizedBox(height: 24),
 
                 // Section Title: Active Accelerators
@@ -666,6 +683,87 @@ class _PrepaymentStrategySimulatorScreenState
                         onChanged: (val) {
                           planNotifier.toggleExtraAnnualEmi(val);
                         },
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 14),
+
+                // Save Current Strategy Action Card
+                Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: AppColors.surfaceContainerLow,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: AppColors.borderSubtle),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          color: AppColors.surfaceContainerHigh,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Icon(
+                          Icons.bookmark_add,
+                          color: AppColors.secondary,
+                          size: 18,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Save Current Strategy',
+                              style: AppTypography.labelLarge.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            Text(
+                              'Save these accelerator settings to reuse anytime',
+                              style: AppTypography.bodySmall.copyWith(fontSize: 11),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      OutlinedButton.icon(
+                        onPressed: () async {
+                          final name = await SaveStrategyDialog.show(context);
+                          if (name != null && context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Strategy "$name" saved!'),
+                                backgroundColor: AppColors.surfaceContainerHighest,
+                                behavior: SnackBarBehavior.floating,
+                              ),
+                            );
+                          }
+                        },
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: AppColors.secondary,
+                          side: BorderSide(
+                            color: AppColors.secondary.withValues(alpha: 0.4),
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 8),
+                        ),
+                        icon: const Icon(Icons.bookmark_add, size: 14),
+                        label: const Text(
+                          'Save',
+                          style: TextStyle(
+                              fontSize: 12, fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ],
                   ),

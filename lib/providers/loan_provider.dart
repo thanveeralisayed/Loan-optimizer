@@ -86,11 +86,81 @@ class PrepaymentPlanNotifier extends Notifier<PrepaymentPlan> {
   void setStrategyMode(StrategyMode mode) {
     state = state.copyWith(strategyMode: mode);
   }
+
+  void applyPlan(PrepaymentPlan newPlan) {
+    state = newPlan;
+  }
 }
 
 final prepaymentPlanProvider =
     NotifierProvider<PrepaymentPlanNotifier, PrepaymentPlan>(
         PrepaymentPlanNotifier.new);
+
+class ActiveBlueprintIdNotifier extends Notifier<String?> {
+  @override
+  String? build() => 'system-aggressive';
+
+  void setActive(String? id) {
+    state = id;
+  }
+}
+
+final activeBlueprintIdProvider =
+    NotifierProvider<ActiveBlueprintIdNotifier, String?>(
+        ActiveBlueprintIdNotifier.new);
+
+class SavedStrategiesNotifier extends Notifier<List<StrategyBlueprint>> {
+  @override
+  List<StrategyBlueprint> build() {
+    return StrategyBlueprint.defaultSavedPresets();
+  }
+
+  void saveStrategy({
+    required String name,
+    String? description,
+    required PrepaymentPlan plan,
+  }) {
+    final cleanName = name.trim().isEmpty ? 'Custom Strategy' : name.trim();
+    final cleanDesc = description != null && description.trim().isNotEmpty
+        ? description.trim()
+        : 'User configured payoff roadmap';
+    final newBlueprint = StrategyBlueprint(
+      id: 'custom-${DateTime.now().millisecondsSinceEpoch}',
+      name: cleanName,
+      description: cleanDesc,
+      versionTag: 'v1.0',
+      plan: plan,
+      isSystem: false,
+      createdAt: DateTime.now(),
+      iconKey: 'trending_up',
+    );
+    state = [newBlueprint, ...state];
+  }
+
+  void updateStrategy({
+    required String id,
+    required String name,
+    String? description,
+  }) {
+    state = state.map((b) {
+      if (b.id == id) {
+        return b.copyWith(
+          name: name.trim().isEmpty ? b.name : name.trim(),
+          description: description?.trim() ?? b.description,
+        );
+      }
+      return b;
+    }).toList();
+  }
+
+  void deleteStrategy(String id) {
+    state = state.where((b) => b.id != id).toList();
+  }
+}
+
+final savedStrategiesProvider =
+    NotifierProvider<SavedStrategiesNotifier, List<StrategyBlueprint>>(
+        SavedStrategiesNotifier.new);
 
 final amortizationResultProvider = Provider<LoanAmortizationResult>((ref) {
   final config = ref.watch(loanConfigProvider);
