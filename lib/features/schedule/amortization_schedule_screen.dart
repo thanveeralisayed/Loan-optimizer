@@ -77,54 +77,29 @@ class _AmortizationScheduleScreenState
 
     return Scaffold(
       appBar: AppHeader(
-        title: 'LoanOpt',
-        rateTag: 'Active • ${config.annualInterestRate.toStringAsFixed(1)}%',
-        subtitle: 'Schedule',
+        title: 'Amortization Schedule',
+        subtitle:
+            '${config.tenureMonths ~/ 12}-Year Term • ${config.rateType.displayName} ${config.annualInterestRate.toStringAsFixed(2)}%',
+        showLogo: false,
+        actions: [
+          _buildExportPill(
+            label: 'CSV',
+            icon: Icons.table_chart_outlined,
+            onTap: () => _exportCsv(result),
+          ),
+          const SizedBox(width: 6),
+          _buildExportPill(
+            label: 'PDF',
+            icon: Icons.picture_as_pdf_outlined,
+            onTap: () => _exportPdf(result),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header with CSV & PDF Export Action Pills
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Amortization Schedule',
-                      style: AppTypography.headlineMedium.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    Text(
-                      '${config.tenureMonths ~/ 12}-Year Term • ${config.rateType.displayName} ${config.annualInterestRate.toStringAsFixed(2)}%',
-                      style: AppTypography.bodySmall,
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    _buildExportPill(
-                      label: 'CSV',
-                      icon: Icons.table_chart_outlined,
-                      onTap: () => _exportCsv(result),
-                    ),
-                    const SizedBox(width: 8),
-                    _buildExportPill(
-                      label: 'PDF',
-                      icon: Icons.picture_as_pdf_outlined,
-                      onTap: () => _exportPdf(result),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 16),
-
             // Segmented Tab Bar (Yearly vs Monthly)
             SegmentedControlPill<ScheduleViewMode>(
               options: const [

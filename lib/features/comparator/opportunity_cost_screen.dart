@@ -29,10 +29,9 @@ class OpportunityCostScreen extends ConsumerWidget {
     final investWidthPct = (result.netInvestmentProfit / maxMetric).clamp(0.05, 1.0);
 
     return Scaffold(
-      appBar: AppHeader(
-        title: 'LoanOpt',
-        rateTag: '${loanConfig.annualInterestRate.toStringAsFixed(2)}% Floating',
-        subtitle: 'Compare',
+      appBar: const AppHeader(
+        title: 'Opportunity Cost',
+        showLogo: false,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),

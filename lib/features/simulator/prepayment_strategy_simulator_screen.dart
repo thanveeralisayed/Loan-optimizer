@@ -44,7 +44,6 @@ class _PrepaymentStrategySimulatorScreenState
 
   @override
   Widget build(BuildContext context) {
-    final config = ref.watch(loanConfigProvider);
     final plan = ref.watch(prepaymentPlanProvider);
     final planNotifier = ref.read(prepaymentPlanProvider.notifier);
     final result = ref.watch(amortizationResultProvider);
@@ -64,11 +63,9 @@ class _PrepaymentStrategySimulatorScreenState
         : 100.0;
 
     return Scaffold(
-      appBar: AppHeader(
-        title: 'LoanOpt',
-        rateTag:
-            '${config.loanType.displayName} • ${config.annualInterestRate.toStringAsFixed(1)}%',
-        subtitle: 'Simulator',
+      appBar: const AppHeader(
+        title: 'Prepayment Simulator',
+        showLogo: false,
       ),
       body: Stack(
         children: [

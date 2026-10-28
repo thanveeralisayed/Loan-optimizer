@@ -50,10 +50,9 @@ class _LoanSetupScreenState extends ConsumerState<LoanSetupScreen> {
     final monthsRemainder = config.tenureMonths % 12;
 
     return Scaffold(
-      appBar: AppHeader(
-        title: 'LoanOpt',
-        rateTag: '${config.annualInterestRate.toStringAsFixed(1)}% ${config.rateType.displayName}',
-        subtitle: 'New Loan Setup',
+      appBar: const AppHeader(
+        title: 'Configure Loan',
+        showLogo: false,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),

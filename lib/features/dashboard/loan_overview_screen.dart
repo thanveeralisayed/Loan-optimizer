@@ -43,11 +43,8 @@ class LoanOverviewScreen extends ConsumerWidget {
         : 0.0;
 
     return Scaffold(
-      appBar: AppHeader(
+      appBar: const AppHeader(
         title: 'LoanOpt',
-        rateTag:
-            '${config.annualInterestRate.toStringAsFixed(2)}% ${config.rateType.displayName}',
-        subtitle: 'Dashboard',
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
