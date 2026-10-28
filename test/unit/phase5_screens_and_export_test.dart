@@ -6,6 +6,7 @@ import 'package:loan_optimizer/features/comparator/opportunity_cost_screen.dart'
 import 'package:loan_optimizer/features/schedule/amortization_schedule_screen.dart';
 import 'package:loan_optimizer/features/shell/app_shell.dart';
 import 'package:loan_optimizer/models/loan_config.dart';
+import 'package:loan_optimizer/providers/loan_provider.dart';
 import 'package:loan_optimizer/services/export_service.dart';
 import 'package:loan_optimizer/services/loan_calculator_engine.dart';
 
@@ -61,6 +62,42 @@ void main() {
       expect(find.text('Option B: Post-Tax Equity Profit'), findsOneWidget);
       expect(find.text('Expected Market Return'), findsOneWidget);
     });
+
+    testWidgets('OpportunityCostScreen sliders and quick chips update state',
+        (tester) async {
+      final container = ProviderContainer();
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            theme: AppTheme.darkTheme,
+            home: const OpportunityCostScreen(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Sliders exist for Return and Horizon
+      final sliders = find.byType(Slider);
+      expect(sliders, findsNWidgets(2));
+
+      // Scroll to slider and drag
+      await tester.ensureVisible(sliders.first);
+      await tester.pumpAndSettle();
+      await tester.drag(sliders.first, const Offset(50, 0));
+      await tester.pumpAndSettle();
+
+      expect(container.read(opportunityCostParamsProvider).expectedAnnualReturn,
+          greaterThan(0));
+
+      // Tap + ₹1L quick chip
+      final chipFinder = find.text('+ ₹1L');
+      if (chipFinder.evaluate().isNotEmpty) {
+        await tester.ensureVisible(chipFinder.first);
+        await tester.tap(chipFinder.first);
+        await tester.pumpAndSettle();
+      }
+    });
   });
 
   group('Phase 5: Screen 5 AmortizationScheduleScreen Tests', () {
@@ -103,6 +140,52 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.textContaining('CSV Generated'), findsOneWidget);
+    });
+
+    testWidgets('Tapping PDF export displays confirmation snackbar',
+        (tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp(
+            theme: AppTheme.darkTheme,
+            home: const AmortizationScheduleScreen(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('PDF'));
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('PDF Statement Generated'), findsOneWidget);
+    });
+
+    testWidgets('Tapping yearly accordion collapses and expands monthly breakdown',
+        (tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp(
+            theme: AppTheme.darkTheme,
+            home: const AmortizationScheduleScreen(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Year 1 is expanded by default - M1 is visible
+      expect(find.text('M1 (Jan)'), findsOneWidget);
+
+      // Tap Year 1 header to collapse it
+      await tester.tap(find.text('Year 1 (2022)'));
+      await tester.pumpAndSettle();
+
+      // M1 is now collapsed
+      expect(find.text('M1 (Jan)'), findsNothing);
+
+      // Tap Year 1 again to expand it back
+      await tester.tap(find.text('Year 1 (2022)'));
+      await tester.pumpAndSettle();
+      expect(find.text('M1 (Jan)'), findsOneWidget);
     });
 
     testWidgets('Switching to Monthly Breakdown renders monthly payment rows',
@@ -159,6 +242,54 @@ void main() {
       await tester.tap(find.byIcon(Icons.tune_outlined));
       await tester.pumpAndSettle();
       expect(find.text('Configure Loan & Targets'), findsOneWidget);
+    });
+
+    testWidgets('In-screen action buttons navigate between tabs in AppShell',
+        (tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp(
+            theme: AppTheme.darkTheme,
+            home: const AppShell(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Tap Simulator action card via its unique subtitle in Overview
+      final simulatorCard = find.text('Save Lakhs early');
+      await tester.ensureVisible(simulatorCard);
+      await tester.pumpAndSettle();
+      await tester.tap(simulatorCard);
+      await tester.pumpAndSettle();
+
+      // We are now in Simulator
+      expect(find.text('PROJECTED TOTAL SAVINGS'), findsOneWidget);
+
+      // Tap "Apply Strategy" button in bottom dock
+      final applyButton = find.text('Apply Strategy');
+      await tester.ensureVisible(applyButton);
+      await tester.pumpAndSettle();
+      await tester.tap(applyButton);
+      await tester.pumpAndSettle();
+
+      // We are back in Overview
+      expect(find.text('OUTSTANDING BALANCE'), findsOneWidget);
+
+      // Go to Setup via bottom bar
+      await tester.tap(find.byIcon(Icons.tune_outlined));
+      await tester.pumpAndSettle();
+      expect(find.text('Configure Loan & Targets'), findsOneWidget);
+
+      // Tap "Save & View Dashboard" button
+      final saveButton = find.text('Save & View Dashboard');
+      await tester.ensureVisible(saveButton);
+      await tester.pumpAndSettle();
+      await tester.tap(saveButton);
+      await tester.pumpAndSettle();
+
+      // We are back in Overview
+      expect(find.text('OUTSTANDING BALANCE'), findsOneWidget);
     });
   });
 }

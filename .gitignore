@@ -5,6 +5,7 @@ stitch_modern_aesthetic_ui_redesign/
 .dart_tool/
 .packages
 build/
+coverage/
 .flutter-plugins
 .flutter-plugins-dependencies
 

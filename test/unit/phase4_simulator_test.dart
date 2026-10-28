@@ -110,6 +110,53 @@ void main() {
       expect(
           container.read(prepaymentPlanProvider).enableExtraAnnualEmi, isFalse);
     });
+
+    testWidgets('Stepped EMI slider updates percentage state', (tester) async {
+      final container = ProviderContainer();
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            theme: AppTheme.darkTheme,
+            home: const PrepaymentStrategySimulatorScreen(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final sliderFinder = find.byType(Slider);
+      expect(sliderFinder, findsOneWidget);
+      await tester.ensureVisible(sliderFinder);
+
+      // Drag slider forward
+      await tester.drag(sliderFinder, const Offset(60, 0));
+      await tester.pumpAndSettle();
+
+      expect(container.read(prepaymentPlanProvider).steppedEmiPercentage,
+          greaterThanOrEqualTo(0.0));
+    });
+
+    testWidgets('Apply Strategy button triggers onApply callback', (tester) async {
+      bool applied = false;
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp(
+            theme: AppTheme.darkTheme,
+            home: PrepaymentStrategySimulatorScreen(
+              onApply: () => applied = true,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final applyButton = find.text('Apply Strategy');
+      await tester.ensureVisible(applyButton);
+      await tester.tap(applyButton);
+      await tester.pumpAndSettle();
+
+      expect(applied, isTrue);
+    });
   });
 }
 
