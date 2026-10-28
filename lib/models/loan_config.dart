@@ -52,17 +52,19 @@ class LoanConfig {
     String? name,
     this.loanNumber = '',
   })  : name = name ?? loanType.displayName,
-        startDate = startDate ?? DateTime.now(),
+        startDate = startDate ??
+            DateTime(DateTime.now().year, DateTime.now().month, 1),
         assert(principal >= 0, 'Principal cannot be negative'),
         assert(annualInterestRate >= 0, 'Interest rate cannot be negative'),
         assert(tenureMonths >= 0, 'Tenure months cannot be negative');
 
   factory LoanConfig.defaultHomeLoan() {
+    final now = DateTime.now();
     return LoanConfig(
       principal: 5000000, // ₹50 Lakhs
       annualInterestRate: 8.5, // 8.5%
       tenureMonths: 240, // 20 years
-      startDate: DateTime(2022, 1, 1),
+      startDate: DateTime(now.year, now.month, 1), // 1st of current month
       loanType: LoanType.home,
       rateType: RateType.floating,
       name: 'Home Loan',

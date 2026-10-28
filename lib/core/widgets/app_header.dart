@@ -171,6 +171,46 @@ class AppHeader extends ConsumerWidget implements PreferredSizeWidget {
     final rateTypeLabel =
         config.rateType == RateType.floating ? 'floating' : 'fixed';
 
+    // Compute next EMI due date dynamically from loan start day-of-month
+    final now = DateTime.now();
+    final emiDay = config.startDate.day;
+    final DateTime nextEmiDate;
+    if (now.day < emiDay) {
+      // EMI day still coming this month
+      nextEmiDate = DateTime(now.year, now.month, emiDay);
+    } else {
+      // EMI day already passed or today; next is next calendar month
+      final nextMonth = now.month == 12 ? 1 : now.month + 1;
+      final nextYear = now.month == 12 ? now.year + 1 : now.year;
+      final daysInNextMonth = DateUtils.getDaysInMonth(nextYear, nextMonth);
+      nextEmiDate =
+          DateTime(nextYear, nextMonth, emiDay.clamp(1, daysInNextMonth));
+    }
+    final daysUntilEmi =
+        nextEmiDate.difference(DateTime(now.year, now.month, now.day)).inDays;
+    final dueBadge = daysUntilEmi == 0
+        ? 'Due Today'
+        : daysUntilEmi == 1
+            ? 'Due Tomorrow'
+            : 'Due in $daysUntilEmi days';
+    const monthShortNames = [
+      '',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    final emiDateLabel =
+        '${_dayOrdinal(nextEmiDate.day)} ${monthShortNames[nextEmiDate.month]}';
+
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
@@ -261,8 +301,8 @@ class AppHeader extends ConsumerWidget implements PreferredSizeWidget {
                     iconColor: AppColors.primary,
                     title: 'Upcoming EMI ($formattedEmi)',
                     subtitle:
-                        'Scheduled for auto-debit on 5th next month from primary bank account.',
-                    tag: 'Due in 6 days',
+                        'Scheduled for auto-debit on $emiDateLabel from primary bank account.',
+                    tag: dueBadge,
                     tagColor: AppColors.errorCoral,
                   ),
                   const SizedBox(height: 10),
@@ -393,5 +433,20 @@ class AppHeader extends ConsumerWidget implements PreferredSizeWidget {
         ],
       ),
     );
+  }
+
+  /// Returns ordinal suffix string for a day number, e.g. "1st", "2nd", "3rd", "4th"
+  static String _dayOrdinal(int day) {
+    if (day >= 11 && day <= 13) return '${day}th';
+    switch (day % 10) {
+      case 1:
+        return '${day}st';
+      case 2:
+        return '${day}nd';
+      case 3:
+        return '${day}rd';
+      default:
+        return '${day}th';
+    }
   }
 }

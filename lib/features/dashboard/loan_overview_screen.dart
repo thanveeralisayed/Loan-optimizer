@@ -46,14 +46,24 @@ class LoanOverviewScreen extends ConsumerWidget {
       }
     }
 
-    // Current mock snapshot: Year 3 progress
-    final int currentMonthIndex = 36.clamp(1, result.baseSchedule.length);
-    final currentRow = result.baseSchedule.isNotEmpty
+    // Compute elapsed months from loan start date to today
+    final now = DateTime.now();
+    final startDate = config.startDate;
+    // If the loan hasn't started yet (future start), show month 0 (no payments made)
+    int elapsedMonths = 0;
+    if (!startDate.isAfter(now)) {
+      elapsedMonths = (now.year - startDate.year) * 12 +
+          (now.month - startDate.month);
+    }
+    final int currentMonthIndex =
+        elapsedMonths.clamp(0, result.baseSchedule.length);
+    final currentRow = result.baseSchedule.isNotEmpty && currentMonthIndex > 0
         ? result.baseSchedule[currentMonthIndex - 1]
         : null;
 
+    // For a brand-new loan (no payments yet), outstanding = full principal
     final outstandingBalance =
-        currentRow?.closingBalance ?? (config.principal * 0.85);
+        currentMonthIndex == 0 ? config.principal : currentRow?.closingBalance ?? config.principal;
     final principalPaid = config.principal - outstandingBalance;
     final interestPaidSoFar = result.baseSchedule
         .take(currentMonthIndex)
@@ -62,6 +72,42 @@ class LoanOverviewScreen extends ConsumerWidget {
     final progressPct = config.principal > 0
         ? ((principalPaid / config.principal) * 100).clamp(0.0, 100.0)
         : 0.0;
+
+    // Compute next EMI due date dynamically from loan start day-of-month
+    final emiDay = startDate.day;
+    final DateTime nextEmiDate;
+    if (now.day < emiDay) {
+      nextEmiDate = DateTime(now.year, now.month, emiDay);
+    } else {
+      final nextMonth = now.month == 12 ? 1 : now.month + 1;
+      final nextYear = now.month == 12 ? now.year + 1 : now.year;
+      final daysInNextMonth = DateUtils.getDaysInMonth(nextYear, nextMonth);
+      nextEmiDate =
+          DateTime(nextYear, nextMonth, emiDay.clamp(1, daysInNextMonth));
+    }
+    final daysUntilEmi =
+        nextEmiDate.difference(DateTime(now.year, now.month, now.day)).inDays;
+    final dueBadgeText = daysUntilEmi == 0
+        ? 'Due Today'
+        : daysUntilEmi == 1
+            ? 'Due Tomorrow'
+            : 'Due in $daysUntilEmi days';
+    const monthShortNames = [
+      '',
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+    ];
+    String dayOrd(int d) {
+      if (d >= 11 && d <= 13) return '${d}th';
+      switch (d % 10) {
+        case 1: return '${d}st';
+        case 2: return '${d}nd';
+        case 3: return '${d}rd';
+        default: return '${d}th';
+      }
+    }
+    final emiDateLabel =
+        '${dayOrd(nextEmiDate.day)} ${monthShortNames[nextEmiDate.month]}';
 
     return Scaffold(
       appBar: const AppHeader(
@@ -339,7 +385,7 @@ class LoanOverviewScreen extends ConsumerWidget {
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: Text(
-                                'Due in 6 days',
+                                dueBadgeText,
                                 style: AppTypography.labelSmall.copyWith(
                                   color: AppColors.onErrorContainer,
                                   fontSize: 9,
@@ -348,7 +394,7 @@ class LoanOverviewScreen extends ConsumerWidget {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              '5th Next Month',
+                              emiDateLabel,
                               style: AppTypography.labelSmall.copyWith(
                                 fontSize: 10,
                                 color: AppColors.onSurfaceVariant,

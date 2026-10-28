@@ -88,7 +88,7 @@ void main() {
       expect(find.text('Active'), findsOneWidget);
       expect(find.text('OUTSTANDING BALANCE'), findsOneWidget);
       expect(find.text('Upcoming EMI (Auto-Debit)'), findsOneWidget);
-      expect(find.text('Due in 6 days'), findsOneWidget);
+      expect(find.textContaining('Due'), findsWidgets);
       expect(find.text('Debt Decay Trajectory'), findsOneWidget);
     });
 

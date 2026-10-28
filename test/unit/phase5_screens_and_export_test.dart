@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:intl/intl.dart';
 import 'package:loan_optimizer/core/theme/app_theme.dart';
 import 'package:loan_optimizer/features/comparator/opportunity_cost_screen.dart';
 import 'package:loan_optimizer/features/schedule/amortization_schedule_screen.dart';
@@ -113,6 +114,8 @@ void main() {
       );
       await tester.pumpAndSettle();
 
+      final currentYear = DateTime.now().year;
+
       expect(find.text('Amortization Schedule'), findsOneWidget);
       expect(find.text('CSV'), findsOneWidget);
       expect(find.text('PDF'), findsOneWidget);
@@ -121,7 +124,7 @@ void main() {
       expect(find.text('TOTAL INTEREST'), findsOneWidget);
       expect(find.text('TOTAL OUTFLOW'), findsOneWidget);
       expect(find.text('Schedule Trajectory'), findsOneWidget);
-      expect(find.text('Year 1 (2022)'), findsOneWidget);
+      expect(find.text('Year 1 ($currentYear)'), findsOneWidget);
     });
 
     testWidgets('Tapping CSV export displays confirmation snackbar',
@@ -172,20 +175,23 @@ void main() {
       );
       await tester.pumpAndSettle();
 
+      final currentYear = DateTime.now().year;
+      final currentMonthName = DateFormat('MMM').format(DateTime.now());
+
       // Year 1 is expanded by default - M1 is visible
-      expect(find.text('M1 (Jan)'), findsOneWidget);
+      expect(find.text('M1 ($currentMonthName)'), findsOneWidget);
 
       // Tap Year 1 header to collapse it
-      await tester.tap(find.text('Year 1 (2022)'));
+      await tester.tap(find.text('Year 1 ($currentYear)'));
       await tester.pumpAndSettle();
 
       // M1 is now collapsed
-      expect(find.text('M1 (Jan)'), findsNothing);
+      expect(find.text('M1 ($currentMonthName)'), findsNothing);
 
       // Tap Year 1 again to expand it back
-      await tester.tap(find.text('Year 1 (2022)'));
+      await tester.tap(find.text('Year 1 ($currentYear)'));
       await tester.pumpAndSettle();
-      expect(find.text('M1 (Jan)'), findsOneWidget);
+      expect(find.text('M1 ($currentMonthName)'), findsOneWidget);
     });
 
     testWidgets('Switching to Monthly Breakdown renders monthly payment rows',
