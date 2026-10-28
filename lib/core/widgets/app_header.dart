@@ -277,7 +277,7 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
                     iconColor: AppColors.primary,
                     title: 'Upcoming EMI (₹43,391)',
                     subtitle:
-                        'Scheduled for auto-debit on 5th next month from primary bank account (•••• 8492).',
+                        'Scheduled for auto-debit on 5th next month from primary bank account.',
                     tag: 'Due in 6 days',
                     tagColor: AppColors.errorCoral,
                   ),
@@ -453,7 +453,7 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
                       children: [
                         _buildProfileRow(
                           'Loan Facility',
-                          'Prime Home Loan (•••• 8492)',
+                          'Active Facility',
                         ),
                         const Divider(color: AppColors.borderSubtle, height: 16),
                         _buildProfileRow('Sanctioned Amount', '₹50,00,000'),

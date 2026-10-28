@@ -12,7 +12,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('LoanOpt'), findsWidgets);
-    expect(find.text('Prime Home Loan'), findsOneWidget);
+    expect(find.text('Home Loan'), findsOneWidget);
     expect(find.text('OUTSTANDING BALANCE'), findsOneWidget);
   });
 }

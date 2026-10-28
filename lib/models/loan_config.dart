@@ -49,9 +49,10 @@ class LoanConfig {
     DateTime? startDate,
     this.loanType = LoanType.home,
     this.rateType = RateType.floating,
-    this.name = 'Prime Home Loan',
-    this.loanNumber = '8492',
-  })  : startDate = startDate ?? DateTime.now(),
+    String? name,
+    this.loanNumber = '',
+  })  : name = name ?? loanType.displayName,
+        startDate = startDate ?? DateTime.now(),
         assert(principal >= 0, 'Principal cannot be negative'),
         assert(annualInterestRate >= 0, 'Interest rate cannot be negative'),
         assert(tenureMonths >= 0, 'Tenure months cannot be negative');
@@ -64,8 +65,8 @@ class LoanConfig {
       startDate: DateTime(2022, 1, 1),
       loanType: LoanType.home,
       rateType: RateType.floating,
-      name: 'Prime Home Loan',
-      loanNumber: '8492',
+      name: 'Home Loan',
+      loanNumber: '',
     );
   }
 

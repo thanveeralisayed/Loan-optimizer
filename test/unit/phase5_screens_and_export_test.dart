@@ -138,7 +138,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Starts at Overview
-      expect(find.text('Prime Home Loan'), findsOneWidget);
+      expect(find.text('Home Loan'), findsOneWidget);
 
       // Tap Simulator via bottom bar
       await tester.tap(find.byIcon(Icons.bolt_outlined));

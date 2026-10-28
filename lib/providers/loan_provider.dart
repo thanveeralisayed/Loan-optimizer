@@ -38,7 +38,10 @@ class LoanConfigNotifier extends Notifier<LoanConfig> {
   }
 
   void updateLoanType(LoanType type) {
-    state = state.copyWith(loanType: type);
+    state = state.copyWith(
+      loanType: type,
+      name: type.displayName,
+    );
   }
 
   void updateRateType(RateType type) {

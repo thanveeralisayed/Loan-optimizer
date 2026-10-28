@@ -76,7 +76,7 @@ void main() {
 
       // Profile bottom sheet is displayed
       expect(find.text('Arjun Sharma'), findsOneWidget);
-      expect(find.text('Prime Home Loan (•••• 8492)'), findsOneWidget);
+      expect(find.text('Active Facility'), findsOneWidget);
       expect(find.text('₹50,00,000'), findsOneWidget);
       expect(find.textContaining('100% Offline Engine'), findsOneWidget);
 

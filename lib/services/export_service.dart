@@ -74,7 +74,7 @@ class ExportService {
                   pw.Text('LoanOpt Amortization Statement', style: titleStyle),
                   pw.SizedBox(height: 4),
                   pw.Text(
-                    '${config.name} (No. ${config.loanNumber})',
+                    '${config.name} Statement',
                     style: const pw.TextStyle(fontSize: 12, color: PdfColors.grey700),
                   ),
                 ],

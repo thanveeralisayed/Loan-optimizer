@@ -6,6 +6,7 @@ import '../../core/theme/app_typography.dart';
 import '../../core/utils/indian_currency_formatter.dart';
 import '../../core/widgets/app_header.dart';
 import '../../core/widgets/dual_tone_progress_bar.dart';
+import '../../models/loan_config.dart';
 import '../../providers/loan_provider.dart';
 
 class LoanOverviewScreen extends ConsumerWidget {
@@ -82,8 +83,8 @@ class LoanOverviewScreen extends ConsumerWidget {
                                 color: AppColors.surfaceContainerHigh,
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              child: const Icon(
-                                Icons.account_balance,
+                              child: Icon(
+                                _getLoanTypeIcon(config.loanType),
                                 color: AppColors.primary,
                                 size: 20,
                               ),
@@ -93,36 +94,16 @@ class LoanOverviewScreen extends ConsumerWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Row(
-                                    children: [
-                                      Flexible(
-                                        child: Text(
-                                          config.name,
-                                          style: AppTypography.headlineSmall.copyWith(
-                                            fontWeight: FontWeight.w700,
-                                          ),
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 6),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 5, vertical: 1),
-                                        decoration: BoxDecoration(
-                                          color: AppColors.surfaceContainerHigh,
-                                          borderRadius: BorderRadius.circular(4),
-                                        ),
-                                        child: Text(
-                                          '•••• ${config.loanNumber}',
-                                          style: AppTypography.labelSmall.copyWith(
-                                            fontSize: 9,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
                                   Text(
-                                    '${config.loanType.displayName} • ${config.rateType.displayName}',
+                                    config.name,
+                                    style: AppTypography.headlineSmall.copyWith(
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    '${config.rateType.displayName} Interest Rate',
                                     style: AppTypography.bodySmall,
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -693,6 +674,19 @@ class LoanOverviewScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  IconData _getLoanTypeIcon(LoanType type) {
+    switch (type) {
+      case LoanType.home:
+        return Icons.home_outlined;
+      case LoanType.car:
+        return Icons.directions_car_outlined;
+      case LoanType.personal:
+        return Icons.person_outline;
+      case LoanType.education:
+        return Icons.school_outlined;
+    }
   }
 }
 

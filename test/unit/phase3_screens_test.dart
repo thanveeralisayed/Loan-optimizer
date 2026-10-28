@@ -84,13 +84,50 @@ void main() {
       await tester.pumpWidget(wrapWithProvider(const LoanOverviewScreen()));
       await tester.pumpAndSettle();
 
-      expect(find.text('Prime Home Loan'), findsOneWidget);
-      expect(find.text('•••• 8492'), findsOneWidget);
+      expect(find.text('Home Loan'), findsOneWidget);
       expect(find.text('Active'), findsOneWidget);
       expect(find.text('OUTSTANDING BALANCE'), findsOneWidget);
       expect(find.text('Upcoming EMI (Auto-Debit)'), findsOneWidget);
       expect(find.text('Due in 6 days'), findsOneWidget);
       expect(find.text('Debt Decay Trajectory'), findsOneWidget);
+    });
+
+    testWidgets('Dashboard dynamically displays selected loan category (Car, Personal, Education)',
+        (tester) async {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      // Verify initial is Home Loan
+      expect(container.read(loanConfigProvider).name, 'Home Loan');
+
+      // Change to Car Loan
+      container.read(loanConfigProvider.notifier).updateLoanType(LoanType.car);
+      expect(container.read(loanConfigProvider).name, 'Car Loan');
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            theme: AppTheme.darkTheme,
+            home: const LoanOverviewScreen(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Car Loan'), findsOneWidget);
+      expect(find.text('Floating Interest Rate'), findsOneWidget);
+      expect(find.textContaining('8492'), findsNothing);
+
+      // Change to Education Loan
+      container.read(loanConfigProvider.notifier).updateLoanType(LoanType.education);
+      await tester.pumpAndSettle();
+      expect(find.text('Education Loan'), findsOneWidget);
+
+      // Change to Personal Loan
+      container.read(loanConfigProvider.notifier).updateLoanType(LoanType.personal);
+      await tester.pumpAndSettle();
+      expect(find.text('Personal Loan'), findsOneWidget);
     });
 
     testWidgets('Action cards fire navigation callbacks', (tester) async {
