@@ -9,7 +9,6 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
   final bool showLogo;
   final List<Widget>? actions;
   final VoidCallback? onNotificationsTap;
-  final VoidCallback? onProfileTap;
 
   const AppHeader({
     super.key,
@@ -19,7 +18,6 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
     this.showLogo = true,
     this.actions,
     this.onNotificationsTap,
-    this.onProfileTap,
   });
 
   @override
@@ -153,28 +151,6 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
                         visualDensity: VisualDensity.compact,
                         splashRadius: 18,
                         tooltip: 'Notifications',
-                      ),
-                      const SizedBox(width: 4),
-                      GestureDetector(
-                        onTap: onProfileTap ??
-                            () => _showProfileSheet(context),
-                        child: Container(
-                          width: 28,
-                          height: 28,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: AppColors.surfaceContainerHigh,
-                            border: Border.all(
-                              color: AppColors.borderLight,
-                              width: 1,
-                            ),
-                          ),
-                          child: const Icon(
-                            Icons.person,
-                            size: 16,
-                            color: AppColors.onSurface,
-                          ),
-                        ),
                       ),
                     ],
                   ),
@@ -330,202 +306,6 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
-  void _showProfileSheet(BuildContext context) {
-    showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (BuildContext sheetContext) {
-        return Container(
-          decoration: const BoxDecoration(
-            color: AppColors.surfaceContainerLow,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-            border: Border(
-              top: BorderSide(color: AppColors.borderLight, width: 1),
-              left: BorderSide(color: AppColors.borderLight, width: 1),
-              right: BorderSide(color: AppColors.borderLight, width: 1),
-            ),
-          ),
-          child: SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Container(
-                      width: 36,
-                      height: 4,
-                      margin: const EdgeInsets.only(bottom: 16),
-                      decoration: BoxDecoration(
-                        color: AppColors.outlineVariant,
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: const LinearGradient(
-                            colors: [
-                              AppColors.accentIndigo,
-                              AppColors.secondaryContainer
-                            ],
-                          ),
-                          border: Border.all(
-                            color: AppColors.borderLight,
-                            width: 1.5,
-                          ),
-                        ),
-                        child: const Center(
-                          child: Text(
-                            'AS',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Arjun Sharma',
-                              style: AppTypography.headlineSmall.copyWith(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.onSurface,
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              'Borrower ID: LO-849201 • Prime Facility',
-                              style: AppTypography.bodySmall.copyWith(
-                                color: AppColors.onSurfaceVariant,
-                                fontSize: 11,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 3,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.tertiaryContainer,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: AppColors.tertiary.withValues(alpha: 0.3),
-                          ),
-                        ),
-                        child: Text(
-                          'Active',
-                          style: AppTypography.labelSmall.copyWith(
-                            color: AppColors.tertiary,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 10,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Container(
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: AppColors.surfaceContainer,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: AppColors.borderSubtle),
-                    ),
-                    child: Column(
-                      children: [
-                        _buildProfileRow(
-                          'Loan Facility',
-                          'Active Facility',
-                        ),
-                        const Divider(color: AppColors.borderSubtle, height: 16),
-                        _buildProfileRow('Sanctioned Amount', '₹50,00,000'),
-                        const Divider(color: AppColors.borderSubtle, height: 16),
-                        _buildProfileRow(
-                          'Benchmark Rate',
-                          '8.50% Floating (Repo + 2.0%)',
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: AppColors.surfaceContainerHigh.withValues(
-                        alpha: 0.5,
-                      ),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: AppColors.borderSubtle),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(
-                          Icons.security_rounded,
-                          color: AppColors.tertiary,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
-                            '100% Offline Engine • Financial calculations & amortizations are securely computed locally on device.',
-                            style: AppTypography.bodySmall.copyWith(
-                              color: AppColors.onSurfaceVariant,
-                              fontSize: 11,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'LoanOpt Engine v1.0.0',
-                        style: AppTypography.labelSmall.copyWith(
-                          color: AppColors.outline,
-                          fontSize: 10,
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () => Navigator.of(sheetContext).pop(),
-                        child: Text(
-                          'Close',
-                          style: AppTypography.labelLarge.copyWith(
-                            color: AppColors.tertiary,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   Widget _buildNotificationCard({
     required IconData icon,
     required Color iconColor,
@@ -604,27 +384,6 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildProfileRow(String label, String value) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: AppTypography.bodySmall.copyWith(
-            color: AppColors.onSurfaceVariant,
-          ),
-        ),
-        Text(
-          value,
-          style: AppTypography.labelMedium.copyWith(
-            color: AppColors.onSurface,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ],
     );
   }
 }
