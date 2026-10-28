@@ -243,3 +243,4 @@ class LoanOptMonochromePainter extends CustomPainter {
         oldDelegate.foregroundColor != foregroundColor;
   }
 }
+
