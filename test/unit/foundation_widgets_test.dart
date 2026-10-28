@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:loan_optimizer/core/theme/app_colors.dart';
 import 'package:loan_optimizer/core/theme/app_theme.dart';
 import 'package:loan_optimizer/core/widgets/app_header.dart';
+import 'package:loan_optimizer/core/widgets/loan_opt_icon.dart';
 import 'package:loan_optimizer/core/widgets/dual_tone_progress_bar.dart';
 import 'package:loan_optimizer/core/widgets/metric_tile.dart';
 import 'package:loan_optimizer/core/widgets/quick_amount_chip.dart';
@@ -34,7 +35,7 @@ void main() {
       expect(find.text('LoanOpt'), findsOneWidget);
       expect(find.text('8.50% Floating'), findsOneWidget);
       expect(find.text('Dashboard'), findsOneWidget);
-      expect(find.byIcon(Icons.account_balance), findsOneWidget);
+      expect(find.byType(LoanOptAppIcon), findsOneWidget);
     });
 
     testWidgets('AppHeader notifications button opens notifications sheet by default',

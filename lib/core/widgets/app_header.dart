@@ -5,6 +5,7 @@ import '../../providers/loan_provider.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
 import '../utils/indian_currency_formatter.dart';
+import 'loan_opt_icon.dart';
 
 class AppHeader extends ConsumerWidget implements PreferredSizeWidget {
   final String title;
@@ -58,23 +59,7 @@ class AppHeader extends ConsumerWidget implements PreferredSizeWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       if (showLogo) ...[
-                        Container(
-                          width: 28,
-                          height: 28,
-                          decoration: BoxDecoration(
-                            color: AppColors.surfaceContainerHigh,
-                            borderRadius: BorderRadius.circular(6),
-                            border: Border.all(
-                              color: AppColors.borderLight,
-                              width: 1,
-                            ),
-                          ),
-                          child: const Icon(
-                            Icons.account_balance,
-                            size: 15,
-                            color: AppColors.primary,
-                          ),
-                        ),
+                        const LoanOptAppIcon(size: 28),
                         const SizedBox(width: 8),
                       ],
                       Flexible(
