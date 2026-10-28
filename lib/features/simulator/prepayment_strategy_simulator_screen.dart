@@ -618,7 +618,7 @@ class _PrepaymentStrategySimulatorScreenState
                       ),
                       Switch(
                         value: plan.enableExtraAnnualEmi,
-                        activeColor: AppColors.tertiary,
+                        activeThumbColor: AppColors.tertiary,
                         activeTrackColor: AppColors.tertiaryContainer,
                         inactiveThumbColor: AppColors.outline,
                         inactiveTrackColor: AppColors.surfaceContainerHighest,
