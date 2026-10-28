@@ -147,40 +147,57 @@ class _LoanSetupScreenState extends ConsumerState<LoanSetupScreen> {
 
                   return Padding(
                     padding: const EdgeInsets.only(right: 8),
-                    child: ChoiceChip(
-                      selected: isSelected,
-                      label: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            icon,
-                            size: 16,
-                            color: isSelected
-                                ? AppColors.onSecondaryContainer
-                                : AppColors.onSurfaceVariant,
-                          ),
-                          const SizedBox(width: 6),
-                          Text(type.displayName),
-                        ],
-                      ),
-                      selectedColor: AppColors.secondaryContainer,
-                      backgroundColor: AppColors.surfaceContainer,
-                      labelStyle: TextStyle(
-                        color: isSelected
-                            ? AppColors.onSecondaryContainer
-                            : AppColors.onSurfaceVariant,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 13,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        side: BorderSide(
+                    child: GestureDetector(
+                      onTap: () => notifier.updateLoanType(type),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 180),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 14, vertical: 10),
+                        decoration: BoxDecoration(
                           color: isSelected
-                              ? AppColors.secondary
-                              : AppColors.borderSubtle,
+                              ? AppColors.secondaryContainer
+                              : AppColors.surfaceContainer,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: isSelected
+                                ? AppColors.secondary
+                                : AppColors.borderSubtle,
+                            width: 1,
+                          ),
+                          boxShadow: isSelected
+                              ? [
+                                  BoxShadow(
+                                    color: AppColors.secondaryContainer
+                                        .withValues(alpha: 0.35),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ]
+                              : null,
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              icon,
+                              size: 16,
+                              color: isSelected
+                                  ? AppColors.onSecondaryContainer
+                                  : AppColors.onSurfaceVariant,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              type.displayName,
+                              style: AppTypography.labelMedium.copyWith(
+                                color: isSelected
+                                    ? AppColors.onSecondaryContainer
+                                    : AppColors.onSurfaceVariant,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      onSelected: (_) => notifier.updateLoanType(type),
                     ),
                   );
                 }).toList(),
