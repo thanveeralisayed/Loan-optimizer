@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:loan_optimizer/core/theme/app_colors.dart';
 import 'package:loan_optimizer/core/theme/app_theme.dart';
@@ -8,12 +9,15 @@ import 'package:loan_optimizer/core/widgets/metric_tile.dart';
 import 'package:loan_optimizer/core/widgets/quick_amount_chip.dart';
 import 'package:loan_optimizer/core/widgets/segmented_control_pill.dart';
 import 'package:loan_optimizer/core/widgets/sticky_bottom_dock.dart';
+import 'package:loan_optimizer/providers/loan_provider.dart';
 
 void main() {
   Widget wrapWidget(Widget child) {
-    return MaterialApp(
-      theme: AppTheme.darkTheme,
-      home: Scaffold(body: child),
+    return ProviderScope(
+      child: MaterialApp(
+        theme: AppTheme.darkTheme,
+        home: Scaffold(body: child),
+      ),
     );
   }
 
@@ -58,6 +62,33 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Notifications & Alerts'), findsNothing);
+    });
+
+    testWidgets(
+        'AppHeader notifications sheet matches dynamic EMI for configured loan amount (e.g. ₹5L loan)',
+        (tester) async {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      // Set loan principal to ₹5,00,000 (as in user screenshot)
+      container.read(loanConfigProvider.notifier).updatePrincipal(500000);
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            theme: AppTheme.darkTheme,
+            home: const Scaffold(body: AppHeader(title: 'LoanOpt')),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byIcon(Icons.notifications_none));
+      await tester.pumpAndSettle();
+
+      // Dynamic EMI is ₹4,339, matching the main card on dashboard
+      expect(find.text('Upcoming EMI (₹4,339)'), findsOneWidget);
     });
 
     testWidgets('AppHeader has no profile icon and displays notification bell only',

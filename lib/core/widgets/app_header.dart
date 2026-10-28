@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../models/loan_config.dart';
+import '../../providers/loan_provider.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
+import '../utils/indian_currency_formatter.dart';
 
-class AppHeader extends StatelessWidget implements PreferredSizeWidget {
+class AppHeader extends ConsumerWidget implements PreferredSizeWidget {
   final String title;
   final String? rateTag;
   final String? subtitle;
   final bool showLogo;
   final List<Widget>? actions;
   final VoidCallback? onNotificationsTap;
+  final double? upcomingEmi;
 
   const AppHeader({
     super.key,
@@ -18,13 +23,18 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
     this.showLogo = true,
     this.actions,
     this.onNotificationsTap,
+    this.upcomingEmi,
   });
 
   @override
   Size get preferredSize => const Size.fromHeight(56.0);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final result = ref.watch(amortizationResultProvider);
+    final config = ref.watch(loanConfigProvider);
+    final emiValue = upcomingEmi ?? result.baseMonthlyEmi;
+
     return Container(
       decoration: BoxDecoration(
         color: AppColors.surface.withValues(alpha: 0.95),
@@ -142,7 +152,11 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
                     children: [
                       IconButton(
                         onPressed: onNotificationsTap ??
-                            () => _showNotificationsSheet(context),
+                            () => _showNotificationsSheet(
+                                  context,
+                                  emiValue,
+                                  config,
+                                ),
                         icon: const Icon(
                           Icons.notifications_none,
                           color: AppColors.onSurfaceVariant,
@@ -162,7 +176,16 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
-  void _showNotificationsSheet(BuildContext context) {
+  void _showNotificationsSheet(
+    BuildContext context,
+    double emiAmount,
+    LoanConfig config,
+  ) {
+    final formattedEmi = IndianCurrencyFormatter.format(emiAmount);
+    final formattedRate = config.annualInterestRate.toStringAsFixed(2);
+    final rateTypeLabel =
+        config.rateType == RateType.floating ? 'floating' : 'fixed';
+
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
@@ -251,7 +274,7 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
                   _buildNotificationCard(
                     icon: Icons.event_available_rounded,
                     iconColor: AppColors.primary,
-                    title: 'Upcoming EMI (₹43,391)',
+                    title: 'Upcoming EMI ($formattedEmi)',
                     subtitle:
                         'Scheduled for auto-debit on 5th next month from primary bank account.',
                     tag: 'Due in 6 days',
@@ -263,7 +286,7 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
                     iconColor: AppColors.tertiary,
                     title: 'Accelerate Debt Freedom',
                     subtitle:
-                        'A ₹2.5L lump-sum bonus prepayment this quarter will save ~₹5.4L in total interest and reduce 4.2 years.',
+                        'A bonus prepayment this quarter will save substantial lifetime interest and reduce years off your loan.',
                     tag: 'Opportunity',
                     tagColor: AppColors.tertiary,
                   ),
@@ -273,7 +296,7 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
                     iconColor: AppColors.secondary,
                     title: 'RBI Repo Rate Policy',
                     subtitle:
-                        'Monetary Policy Committee held the benchmark repo rate at 6.50%. Your floating loan facility remains at 8.50% p.a.',
+                        'Monetary Policy Committee held the benchmark repo rate at 6.50%. Your $rateTypeLabel loan facility is currently modeled at $formattedRate% p.a.',
                     tag: 'Macro Update',
                     tagColor: AppColors.secondary,
                   ),
