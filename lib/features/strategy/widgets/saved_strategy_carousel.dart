@@ -21,7 +21,6 @@ class SavedStrategyCarousel extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final savedStrategies = ref.watch(savedStrategiesProvider);
     final activeId = ref.watch(activeBlueprintIdProvider);
-    final currentPlan = ref.watch(prepaymentPlanProvider);
     final loanConfig = ref.watch(loanConfigProvider);
 
     return Column(
@@ -127,8 +126,7 @@ class SavedStrategyCarousel extends ConsumerWidget {
               }
 
               final blueprint = savedStrategies[index];
-              final isApplied = activeId == blueprint.id ||
-                  _isPlanMatching(currentPlan, blueprint.plan);
+              final isApplied = activeId == blueprint.id;
               final result = LoanCalculatorEngine.calculate(
                 config: loanConfig,
                 plan: blueprint.plan,
@@ -426,19 +424,5 @@ class SavedStrategyCarousel extends ConsumerWidget {
         ),
       ),
     );
-  }
-
-  bool _isPlanMatching(PrepaymentPlan a, PrepaymentPlan b) {
-    if (a.steppedEmiPercentage != b.steppedEmiPercentage) return false;
-    if (a.enableExtraAnnualEmi != b.enableExtraAnnualEmi) return false;
-    if (a.strategyMode != b.strategyMode) return false;
-    if (a.lumpSums.length != b.lumpSums.length) return false;
-    for (int i = 0; i < a.lumpSums.length; i++) {
-      if (a.lumpSums[i].amount != b.lumpSums[i].amount ||
-          a.lumpSums[i].monthIndex != b.lumpSums[i].monthIndex) {
-        return false;
-      }
-    }
-    return true;
   }
 }

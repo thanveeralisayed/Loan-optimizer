@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/utils/indian_currency_formatter.dart';
@@ -7,7 +8,9 @@ import '../../core/widgets/app_header.dart';
 import '../../core/widgets/currency_input_field.dart';
 import '../../core/widgets/quick_amount_chip.dart';
 import '../../core/widgets/segmented_control_pill.dart';
+import '../../models/amortization_schedule.dart';
 import '../../models/loan_config.dart';
+import '../../models/prepayment_plan.dart';
 import '../../providers/loan_provider.dart';
 import '../strategy/widgets/strategy_preset_selector.dart';
 
@@ -47,6 +50,9 @@ class _LoanSetupScreenState extends ConsumerState<LoanSetupScreen> {
   Widget build(BuildContext context) {
     final config = ref.watch(loanConfigProvider);
     final notifier = ref.read(loanConfigProvider.notifier);
+    final result = ref.watch(amortizationResultProvider);
+    final activeId = ref.watch(activeBlueprintIdProvider);
+    final savedStrategies = ref.watch(savedStrategiesProvider);
     final years = config.tenureMonths ~/ 12;
     final monthsRemainder = config.tenureMonths % 12;
 
@@ -454,6 +460,15 @@ class _LoanSetupScreenState extends ConsumerState<LoanSetupScreen> {
             // Accelerated Payoff Strategy & Blueprint Presets (Stitch Design)
             const StrategyPresetSelector(),
 
+            const SizedBox(height: 16),
+
+            // Real-Time Strategy Impact Preview Card
+            _buildLiveImpactPreviewCard(
+              result: result,
+              activeId: activeId,
+              savedList: savedStrategies,
+            ),
+
             const SizedBox(height: 24),
 
             // Save / Proceed Button
@@ -481,6 +496,169 @@ class _LoanSetupScreenState extends ConsumerState<LoanSetupScreen> {
             const SizedBox(height: 32),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildLiveImpactPreviewCard({
+    required LoanAmortizationResult result,
+    required String? activeId,
+    required List<StrategyBlueprint> savedList,
+  }) {
+    String activeName = 'Aggressive Freedom';
+    final systemPresets = StrategyBlueprint.systemPresets();
+    final sysMatch = systemPresets.where((p) => p.id == activeId);
+    if (sysMatch.isNotEmpty) {
+      activeName = sysMatch.first.name;
+    } else {
+      final customMatch = savedList.where((b) => b.id == activeId);
+      if (customMatch.isNotEmpty) {
+        activeName = customMatch.first.name;
+      }
+    }
+
+    final yearsSaved = (result.monthsSaved / 12).toStringAsFixed(1);
+    final endYearStandard =
+        DateFormat('MMM yyyy').format(result.originalEndDate);
+    final endYearOptimized =
+        DateFormat('MMM yyyy').format(result.optimizedEndDate);
+
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: AppColors.tertiary.withValues(alpha: 0.35),
+          width: 1.2,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(
+                Icons.auto_graph,
+                size: 15,
+                color: AppColors.tertiary,
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  'REAL-TIME STRATEGY IMPACT',
+                  style: AppTypography.labelSmall.copyWith(
+                    color: AppColors.tertiary,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.8,
+                    fontSize: 10,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              const SizedBox(width: 6),
+              Flexible(
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: AppColors.tertiaryContainer,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    activeName,
+                    style: AppTypography.labelSmall.copyWith(
+                      color: AppColors.onTertiaryContainer,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 10,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 6,
+            runSpacing: 6,
+            children: [
+              _buildImpactChip(
+                icon: Icons.savings,
+                label: 'Interest Saved',
+                value:
+                    'Save ${IndianCurrencyFormatter.formatCompact(result.totalInterestSaved)}',
+                color: AppColors.tertiary,
+              ),
+              _buildImpactChip(
+                icon: Icons.timelapse,
+                label: 'Tenure Cut',
+                value: result.monthsSaved > 0 ? '-$yearsSaved Yrs' : '0 Yrs',
+                color: AppColors.primary,
+              ),
+              _buildImpactChip(
+                icon: Icons.event_available,
+                label: 'Debt-Free',
+                value: endYearOptimized,
+                color: AppColors.onSurface,
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Text(
+            result.monthsSaved > 0
+                ? 'Standard payoff was $endYearStandard • Applying this strategy finishes loan $yearsSaved years earlier.'
+                : 'Baseline schedule completes by $endYearStandard without extra prepayments.',
+            style: AppTypography.bodySmall.copyWith(
+              fontSize: 11,
+              color: AppColors.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildImpactChip({
+    required IconData icon,
+    required String label,
+    required String value,
+    required Color color,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceContainerHigh,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: AppColors.borderSubtle),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 13, color: color),
+          const SizedBox(width: 5),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                label,
+                style: AppTypography.labelSmall.copyWith(
+                  fontSize: 9,
+                  color: AppColors.onSurfaceVariant,
+                ),
+              ),
+              Text(
+                value,
+                style: AppTypography.labelSmall.copyWith(
+                  color: color,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 11,
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

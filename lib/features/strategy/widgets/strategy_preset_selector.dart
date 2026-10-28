@@ -92,6 +92,7 @@ class _StrategyPresetSelectorState
                     setState(() {
                       _currentTab = StrategyTab.saved;
                     });
+                    widget.onStrategyChanged?.call();
                     messenger.showSnackBar(
                       SnackBar(
                         content: Text('Blueprint "$savedName" saved!'),
@@ -248,8 +249,7 @@ class _StrategyPresetSelectorState
 
     return Column(
       children: systemPresets.map((preset) {
-        final isSelected = activeId == preset.id ||
-            _isPlanMatching(currentPlan, preset.plan);
+        final isSelected = activeId == preset.id;
         final result = LoanCalculatorEngine.calculate(
           config: loanConfig,
           plan: preset.plan,
@@ -495,6 +495,7 @@ class _StrategyPresetSelectorState
                 final messenger = ScaffoldMessenger.of(context);
                 final savedName = await SaveStrategyDialog.show(context);
                 if (savedName != null && mounted) {
+                  widget.onStrategyChanged?.call();
                   messenger.showSnackBar(
                     SnackBar(
                       content: Text('Blueprint "$savedName" saved!'),
@@ -550,7 +551,7 @@ class _StrategyPresetSelectorState
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
-                    '${savedList.length} Active',
+                    '${savedList.length} Saved',
                     style: AppTypography.labelSmall.copyWith(
                       color: AppColors.tertiary,
                       fontSize: 10,
@@ -569,8 +570,7 @@ class _StrategyPresetSelectorState
         const SizedBox(height: 10),
         Column(
           children: savedList.map((blueprint) {
-            final isApplied = activeId == blueprint.id ||
-                _isPlanMatching(currentPlan, blueprint.plan);
+            final isApplied = activeId == blueprint.id;
             final result = LoanCalculatorEngine.calculate(
               config: loanConfig,
               plan: blueprint.plan,
@@ -900,20 +900,6 @@ class _StrategyPresetSelectorState
         ],
       ),
     );
-  }
-
-  bool _isPlanMatching(PrepaymentPlan a, PrepaymentPlan b) {
-    if (a.steppedEmiPercentage != b.steppedEmiPercentage) return false;
-    if (a.enableExtraAnnualEmi != b.enableExtraAnnualEmi) return false;
-    if (a.strategyMode != b.strategyMode) return false;
-    if (a.lumpSums.length != b.lumpSums.length) return false;
-    for (int i = 0; i < a.lumpSums.length; i++) {
-      if (a.lumpSums[i].amount != b.lumpSums[i].amount ||
-          a.lumpSums[i].monthIndex != b.lumpSums[i].monthIndex) {
-        return false;
-      }
-    }
-    return true;
   }
 
   String _getPresetEmoji(String iconKey) {

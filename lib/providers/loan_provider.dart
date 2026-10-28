@@ -110,12 +110,14 @@ final activeBlueprintIdProvider =
         ActiveBlueprintIdNotifier.new);
 
 class SavedStrategiesNotifier extends Notifier<List<StrategyBlueprint>> {
+  static int _idCounter = 0;
+
   @override
   List<StrategyBlueprint> build() {
     return StrategyBlueprint.defaultSavedPresets();
   }
 
-  void saveStrategy({
+  StrategyBlueprint saveStrategy({
     required String name,
     String? description,
     required PrepaymentPlan plan,
@@ -125,7 +127,7 @@ class SavedStrategiesNotifier extends Notifier<List<StrategyBlueprint>> {
         ? description.trim()
         : 'User configured payoff roadmap';
     final newBlueprint = StrategyBlueprint(
-      id: 'custom-${DateTime.now().millisecondsSinceEpoch}',
+      id: 'custom-${DateTime.now().microsecondsSinceEpoch}-${++_idCounter}',
       name: cleanName,
       description: cleanDesc,
       versionTag: 'v1.0',
@@ -135,6 +137,7 @@ class SavedStrategiesNotifier extends Notifier<List<StrategyBlueprint>> {
       iconKey: 'trending_up',
     );
     state = [newBlueprint, ...state];
+    return newBlueprint;
   }
 
   void updateStrategy({

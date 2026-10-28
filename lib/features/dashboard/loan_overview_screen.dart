@@ -7,6 +7,7 @@ import '../../core/utils/indian_currency_formatter.dart';
 import '../../core/widgets/app_header.dart';
 import '../../core/widgets/dual_tone_progress_bar.dart';
 import '../../models/loan_config.dart';
+import '../../models/prepayment_plan.dart';
 import '../../providers/loan_provider.dart';
 
 class LoanOverviewScreen extends ConsumerWidget {
@@ -25,6 +26,25 @@ class LoanOverviewScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final config = ref.watch(loanConfigProvider);
     final result = ref.watch(amortizationResultProvider);
+    final plan = ref.watch(prepaymentPlanProvider);
+    final activeId = ref.watch(activeBlueprintIdProvider);
+    final savedStrategies = ref.watch(savedStrategiesProvider);
+
+    String? activeStrategyName;
+    for (final p in StrategyBlueprint.systemPresets()) {
+      if (p.id == activeId) {
+        activeStrategyName = p.name;
+        break;
+      }
+    }
+    if (activeStrategyName == null) {
+      for (final b in savedStrategies) {
+        if (b.id == activeId) {
+          activeStrategyName = b.name;
+          break;
+        }
+      }
+    }
 
     // Current mock snapshot: Year 3 progress
     final int currentMonthIndex = 36.clamp(1, result.baseSchedule.length);
@@ -107,6 +127,44 @@ class LoanOverviewScreen extends ConsumerWidget {
                                     style: AppTypography.bodySmall,
                                     overflow: TextOverflow.ellipsis,
                                   ),
+                                  if (activeStrategyName != null) ...[
+                                    const SizedBox(height: 4),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 6, vertical: 2),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.surfaceContainerHigh,
+                                        borderRadius: BorderRadius.circular(4),
+                                        border: Border.all(
+                                          color: AppColors.tertiary
+                                              .withValues(alpha: 0.35),
+                                        ),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const Icon(
+                                            Icons.bolt,
+                                            size: 11,
+                                            color: AppColors.tertiary,
+                                          ),
+                                          const SizedBox(width: 3),
+                                          Flexible(
+                                            child: Text(
+                                              activeStrategyName,
+                                              style: AppTypography.labelSmall
+                                                  .copyWith(
+                                                color: AppColors.tertiary,
+                                                fontSize: 9,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ],
                               ),
                             ),
@@ -204,7 +262,9 @@ class LoanOverviewScreen extends ConsumerWidget {
                       const SizedBox(width: 8),
                       _buildSpecItem(
                         'Tenure',
-                        '${config.tenureMonths} Mo',
+                        result.monthsSaved > 0
+                            ? '${result.optimizedTenureMonths} Mo (-${(result.monthsSaved / 12).toStringAsFixed(1)}y)'
+                            : '${config.tenureMonths} Mo',
                       ),
                     ],
                   ),
@@ -250,7 +310,12 @@ class LoanOverviewScreen extends ConsumerWidget {
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                     Text(
-                                      IndianCurrencyFormatter.format(result.baseMonthlyEmi),
+                                      IndianCurrencyFormatter.format(
+                                        plan.strategyMode == StrategyMode.reduceEmi &&
+                                                result.optimizedSchedule.isNotEmpty
+                                            ? result.optimizedSchedule.first.emi
+                                            : result.baseMonthlyEmi,
+                                      ),
                                       style: AppTypography.labelLarge.copyWith(
                                         fontWeight: FontWeight.w700,
                                       ),
@@ -325,7 +390,9 @@ class LoanOverviewScreen extends ConsumerWidget {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              'Amortization progress • Year ${(currentMonthIndex ~/ 12) + 1} of ${config.tenureMonths ~/ 12}',
+                              result.monthsSaved > 0
+                                  ? 'Drops ${(result.monthsSaved / 12).toStringAsFixed(1)} Yrs • Save ${IndianCurrencyFormatter.formatCompact(result.totalInterestSaved)}'
+                                  : 'Amortization progress • Year ${(currentMonthIndex ~/ 12) + 1} of ${config.tenureMonths ~/ 12}',
                               style: AppTypography.bodySmall,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -361,6 +428,49 @@ class LoanOverviewScreen extends ConsumerWidget {
                     ],
                   ),
 
+                  if (result.monthsSaved > 0) ...[
+                    const SizedBox(height: 10),
+                    Wrap(
+                      spacing: 12,
+                      runSpacing: 4,
+                      children: [
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 12,
+                              height: 2,
+                              color: AppColors.onSurfaceVariant
+                                  .withValues(alpha: 0.5),
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Standard (${(result.originalTenureMonths / 12).toStringAsFixed(0)} Yrs)',
+                              style: AppTypography.bodySmall
+                                  .copyWith(fontSize: 10),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                                width: 12, height: 3, color: AppColors.tertiary),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Accelerated (${(result.optimizedTenureMonths / 12).toStringAsFixed(1)} Yrs)',
+                              style: AppTypography.bodySmall.copyWith(
+                                fontSize: 10,
+                                color: AppColors.tertiary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+
                   const SizedBox(height: 14),
 
                   // Split Dual-Tone Progress Visualizer
@@ -375,7 +485,10 @@ class LoanOverviewScreen extends ConsumerWidget {
                   // Trajectory Chart using fl_chart
                   SizedBox(
                     height: 160,
-                    child: _buildTrajectoryChart(result.baseSchedule),
+                    child: _buildTrajectoryChart(
+                      baseSchedule: result.baseSchedule,
+                      optimizedSchedule: result.optimizedSchedule,
+                    ),
                   ),
                 ],
               ),
@@ -520,17 +633,100 @@ class LoanOverviewScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildTrajectoryChart(List<dynamic> schedule) {
-    if (schedule.isEmpty) return const SizedBox();
+  Widget _buildTrajectoryChart({
+    required List<dynamic> baseSchedule,
+    required List<dynamic> optimizedSchedule,
+  }) {
+    if (baseSchedule.isEmpty) return const SizedBox();
 
-    final spots = <FlSpot>[];
-    final step = (schedule.length / 20).ceil();
-    for (int i = 0; i < schedule.length; i += step) {
-      final row = schedule[i];
-      spots.add(FlSpot((i / 12).toDouble(), row.closingBalance / 100000));
+    final baseSpots = <FlSpot>[];
+    final stepBase = (baseSchedule.length / 20).ceil().clamp(1, baseSchedule.length);
+    for (int i = 0; i < baseSchedule.length; i += stepBase) {
+      final row = baseSchedule[i];
+      baseSpots.add(FlSpot((i / 12).toDouble(), row.closingBalance / 100000));
     }
-    final lastRow = schedule.last;
-    spots.add(FlSpot((schedule.length / 12).toDouble(), lastRow.closingBalance / 100000));
+    final lastBaseRow = baseSchedule.last;
+    baseSpots.add(FlSpot((baseSchedule.length / 12).toDouble(), lastBaseRow.closingBalance / 100000));
+
+    final hasOptimization = optimizedSchedule.isNotEmpty &&
+        optimizedSchedule.length < baseSchedule.length;
+
+    final optSpots = <FlSpot>[];
+    if (hasOptimization) {
+      final stepOpt = (optimizedSchedule.length / 20).ceil().clamp(1, optimizedSchedule.length);
+      for (int i = 0; i < optimizedSchedule.length; i += stepOpt) {
+        final row = optimizedSchedule[i];
+        optSpots.add(FlSpot((i / 12).toDouble(), row.closingBalance / 100000));
+      }
+      final lastOptRow = optimizedSchedule.last;
+      optSpots.add(FlSpot((optimizedSchedule.length / 12).toDouble(), lastOptRow.closingBalance / 100000));
+    }
+
+    final lineBars = <LineChartBarData>[];
+
+    if (hasOptimization) {
+      lineBars.add(
+        LineChartBarData(
+          spots: baseSpots,
+          isCurved: true,
+          color: AppColors.onSurfaceVariant.withValues(alpha: 0.35),
+          barWidth: 1.5,
+          dashArray: [4, 4],
+          dotData: const FlDotData(show: false),
+        ),
+      );
+      lineBars.add(
+        LineChartBarData(
+          spots: optSpots,
+          isCurved: true,
+          gradient: const LinearGradient(
+            colors: [
+              AppColors.tertiary,
+              Color(0xFF818CF8),
+            ],
+          ),
+          barWidth: 3,
+          dotData: const FlDotData(show: false),
+          belowBarData: BarAreaData(
+            show: true,
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                AppColors.tertiary.withValues(alpha: 0.25),
+                AppColors.tertiary.withValues(alpha: 0.0),
+              ],
+            ),
+          ),
+        ),
+      );
+    } else {
+      lineBars.add(
+        LineChartBarData(
+          spots: baseSpots,
+          isCurved: true,
+          gradient: const LinearGradient(
+            colors: [
+              Color(0xFF818CF8),
+              AppColors.secondary,
+            ],
+          ),
+          barWidth: 3,
+          dotData: const FlDotData(show: false),
+          belowBarData: BarAreaData(
+            show: true,
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                const Color(0xFF818CF8).withValues(alpha: 0.25),
+                const Color(0xFF818CF8).withValues(alpha: 0.0),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
 
     return LineChart(
       LineChartData(
@@ -553,14 +749,16 @@ class LoanOverviewScreen extends ConsumerWidget {
             fitInsideVertically: true,
             getTooltipItems: (List<LineBarSpot> touchedSpots) {
               return touchedSpots.map((spot) {
-                final year = spot.x.round();
+                final year = spot.x.toStringAsFixed(1);
                 final balanceLakhs = spot.y;
                 final balanceFormatted = balanceLakhs >= 100
                     ? '₹${(balanceLakhs / 100).toStringAsFixed(2)} Cr'
                     : '₹${balanceLakhs.toStringAsFixed(2)} L';
 
+                final isAccelerated = hasOptimization && spot.barIndex == 1;
+
                 return LineTooltipItem(
-                  'Year $year\n',
+                  '${isAccelerated ? "Accelerated " : ""}Year $year\n',
                   const TextStyle(
                     color: AppColors.onSurfaceVariant,
                     fontSize: 11,
@@ -569,8 +767,10 @@ class LoanOverviewScreen extends ConsumerWidget {
                   children: [
                     TextSpan(
                       text: balanceFormatted,
-                      style: const TextStyle(
-                        color: AppColors.tertiary,
+                      style: TextStyle(
+                        color: isAccelerated
+                            ? AppColors.tertiary
+                            : AppColors.onSurface,
                         fontSize: 14,
                         fontWeight: FontWeight.w800,
                       ),
@@ -647,31 +847,7 @@ class LoanOverviewScreen extends ConsumerWidget {
           ),
         ),
         borderData: FlBorderData(show: false),
-        lineBarsData: [
-          LineChartBarData(
-            spots: spots,
-            isCurved: true,
-            gradient: const LinearGradient(
-              colors: [
-                Color(0xFF818CF8), // Vibrant Indigo
-                AppColors.secondary, // Crisp Lavender
-              ],
-            ),
-            barWidth: 3,
-            dotData: const FlDotData(show: false),
-            belowBarData: BarAreaData(
-              show: true,
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  const Color(0xFF818CF8).withValues(alpha: 0.25),
-                  const Color(0xFF818CF8).withValues(alpha: 0.0),
-                ],
-              ),
-            ),
-          ),
-        ],
+        lineBarsData: lineBars,
       ),
     );
   }

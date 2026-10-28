@@ -46,6 +46,14 @@ class _PrepaymentStrategySimulatorScreenState
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<PrepaymentPlan>(prepaymentPlanProvider, (previous, next) {
+      final lump = next.lumpSums.isNotEmpty ? next.lumpSums.first.amount : 0.0;
+      final formatted = lump > 0 ? IndianCurrencyFormatter.formatWithoutSymbol(lump) : '';
+      if (_lumpSumController.text != formatted) {
+        _lumpSumController.text = formatted;
+      }
+    });
+
     final plan = ref.watch(prepaymentPlanProvider);
     final planNotifier = ref.read(prepaymentPlanProvider.notifier);
     final result = ref.watch(amortizationResultProvider);

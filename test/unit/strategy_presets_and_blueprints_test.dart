@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:loan_optimizer/features/simulator/prepayment_strategy_simulator_screen.dart';
 import 'package:loan_optimizer/features/strategy/widgets/save_strategy_dialog.dart';
 import 'package:loan_optimizer/features/strategy/widgets/saved_strategy_carousel.dart';
 import 'package:loan_optimizer/features/strategy/widgets/strategy_preset_selector.dart';
@@ -371,14 +372,17 @@ void main() {
       // Clear name and tap Save Blueprint to test validation
       final nameField = find.byType(TextFormField).first;
       await tester.enterText(nameField, '');
-      await tester.tap(find.text('Save Blueprint'));
+      final saveBtn = find.text('Save Blueprint');
+      await tester.ensureVisible(saveBtn);
+      await tester.tap(saveBtn);
       await tester.pumpAndSettle();
 
       expect(find.text('Please enter a name for your strategy blueprint'), findsOneWidget);
 
       // Enter valid name and save
       await tester.enterText(nameField, 'Freedom Plan 2026');
-      await tester.tap(find.text('Save Blueprint'));
+      await tester.ensureVisible(saveBtn);
+      await tester.tap(saveBtn);
       await tester.pumpAndSettle();
 
       // Dialog should close
@@ -421,6 +425,212 @@ void main() {
         await tester.pumpAndSettle();
         expect(loadedCalled, isTrue);
       }
+    });
+  });
+
+  group('Single Applied Strategy & Dynamic Presets Integration Tests', () {
+    testWidgets(
+        'When multiple custom blueprints share identical plan parameters, strictly only one shows Applied',
+        (tester) async {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      // Save two custom blueprints with the identical sample plan
+      final bp1 = container.read(savedStrategiesProvider.notifier).saveStrategy(
+            name: 'Home Loan Blueprint',
+            plan: PrepaymentPlan.sample(),
+          );
+      final bp2 = container.read(savedStrategiesProvider.notifier).saveStrategy(
+            name: 'My Custom Strategy',
+            plan: PrepaymentPlan.sample(),
+          );
+
+      // Explicitly set bp2 as active
+      container.read(activeBlueprintIdProvider.notifier).setActive(bp2.id);
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            theme: ThemeData.dark(),
+            home: const Scaffold(
+              body: SingleChildScrollView(
+                child: StrategyPresetSelector(),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Switch to My Saved tab
+      await tester.tap(find.textContaining('My Saved'));
+      await tester.pumpAndSettle();
+
+      // Verify header says "Saved" not misleading "Active"
+      expect(find.textContaining('Saved'), findsWidgets);
+
+      // Verify exactly ONE 'Applied' button exists across all blueprint cards
+      expect(find.text('Applied'), findsOneWidget);
+
+      // The other blueprint must show 'Apply Blueprint'
+      expect(find.text('Apply Blueprint'), findsWidgets);
+
+      // Now tap 'Apply Blueprint' on bp1
+      final applyButton =
+          find.widgetWithText(ElevatedButton, 'Apply Blueprint').first;
+      await tester.tap(applyButton);
+      await tester.pumpAndSettle();
+
+      // Now bp1 is active, and still only ONE 'Applied' button exists
+      expect(container.read(activeBlueprintIdProvider), bp1.id);
+      expect(find.text('Applied'), findsOneWidget);
+    });
+
+    testWidgets(
+        'SaveStrategyDialog interactive adjustments produce dynamic savings and updates active plan',
+        (tester) async {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            theme: ThemeData.dark(),
+            home: Scaffold(
+              body: Builder(
+                builder: (ctx) => ElevatedButton(
+                  onPressed: () => SaveStrategyDialog.show(ctx),
+                  child: const Text('Open Modal'),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Open Modal'));
+      await tester.pumpAndSettle();
+
+      // Tap ₹2,00,000 lump sum quick chip
+      final chip2L = find.text('₹2,00,000');
+      await tester.ensureVisible(chip2L);
+      await tester.tap(chip2L);
+      await tester.pumpAndSettle();
+
+      // Tap 10% step-up quick chip
+      final chip10Pct = find.text('10%');
+      await tester.ensureVisible(chip10Pct);
+      await tester.tap(chip10Pct);
+      await tester.pumpAndSettle();
+
+      // Check that the projected impact has dynamically changed beyond standard 9.1 Yrs / 24.60L
+      expect(find.textContaining('Save ₹24.60L'), findsNothing);
+
+      // Save this blueprint
+      final nameField = find.byType(TextFormField).first;
+      await tester.enterText(nameField, 'Aggressive 2L Booster');
+      final saveBtn = find.text('Save Blueprint');
+      await tester.ensureVisible(saveBtn);
+      await tester.tap(saveBtn);
+      await tester.pumpAndSettle();
+
+      // Verify the new blueprint is created and immediately set active in Riverpod
+      final savedList = container.read(savedStrategiesProvider);
+      expect(savedList.first.name, 'Aggressive 2L Booster');
+      expect(savedList.first.plan.steppedEmiPercentage, 10.0);
+      expect(container.read(activeBlueprintIdProvider), savedList.first.id);
+      expect(container.read(prepaymentPlanProvider).steppedEmiPercentage, 10.0);
+    });
+
+    testWidgets(
+        'Selecting Balanced Wealth or Minimum EMI Relief system presets applies plan and updates active ID',
+        (tester) async {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            theme: ThemeData.dark(),
+            home: const Scaffold(
+              body: SingleChildScrollView(
+                child: StrategyPresetSelector(),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Tap Balanced Wealth
+      await tester.tap(find.text('Balanced Wealth'));
+      await tester.pumpAndSettle();
+
+      expect(container.read(activeBlueprintIdProvider), 'system-balanced');
+      expect(container.read(prepaymentPlanProvider).steppedEmiPercentage, 0.0);
+      expect(container.read(prepaymentPlanProvider).enableExtraAnnualEmi, isTrue);
+
+      // Tap Minimum EMI Relief
+      await tester.tap(find.text('Minimum EMI Relief'));
+      await tester.pumpAndSettle();
+
+      expect(container.read(activeBlueprintIdProvider), 'system-relief');
+      expect(
+          container.read(prepaymentPlanProvider).strategyMode, StrategyMode.reduceEmi);
+    });
+
+    testWidgets(
+        'PrepaymentStrategySimulatorScreen updates lump sum controller when preset changes externally',
+        (tester) async {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            theme: ThemeData.dark(),
+            home: const Scaffold(
+              body: PrepaymentStrategySimulatorScreen(),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Initially default plan has 1L annual bonus
+      expect(find.text('1,00,000'), findsOneWidget);
+
+      // Apply a preset with 0 lump sum (e.g. Balanced Wealth)
+      container.read(prepaymentPlanProvider.notifier).applyPlan(
+            const PrepaymentPlan(
+              lumpSums: [],
+              steppedEmiPercentage: 0.0,
+              enableExtraAnnualEmi: true,
+            ),
+          );
+      await tester.pumpAndSettle();
+
+      // Lump sum controller should now be empty
+      expect(find.text('1,00,000'), findsNothing);
+
+      // Apply a custom plan with 3,50,000 lump sum
+      container.read(prepaymentPlanProvider.notifier).applyPlan(
+            const PrepaymentPlan(
+              lumpSums: [
+                LumpSumPrepayment(monthIndex: 12, amount: 350000),
+              ],
+              steppedEmiPercentage: 5.0,
+            ),
+          );
+      await tester.pumpAndSettle();
+
+      // Lump sum controller should now show 3,50,000
+      expect(find.text('3,50,000'), findsOneWidget);
     });
   });
 }
