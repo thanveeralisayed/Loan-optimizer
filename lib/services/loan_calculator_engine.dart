@@ -281,3 +281,4 @@ class LoanCalculatorEngine {
     return days[month];
   }
 }
+

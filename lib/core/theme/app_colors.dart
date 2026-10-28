@@ -53,3 +53,4 @@ class AppColors {
   static const Color borderAccent = Color(0x594F46E5); // 35% indigo
   static const Color glowEmerald = Color(0x334EDEA3); // 20% emerald
 }
+

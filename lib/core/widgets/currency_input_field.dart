@@ -96,3 +96,4 @@ class CurrencyInputField extends StatelessWidget {
     );
   }
 }
+

@@ -118,3 +118,4 @@ class PrepaymentPlan {
       extraAnnualEmiMonth.hashCode ^
       strategyMode.hashCode;
 }
+

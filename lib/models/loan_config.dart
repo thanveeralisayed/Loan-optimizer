@@ -116,3 +116,4 @@ class LoanConfig {
       name.hashCode ^
       loanNumber.hashCode;
 }
+

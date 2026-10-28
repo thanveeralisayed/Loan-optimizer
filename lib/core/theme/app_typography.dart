@@ -101,3 +101,4 @@ class AppTypography {
     color: AppColors.onSurfaceVariant,
   );
 }
+

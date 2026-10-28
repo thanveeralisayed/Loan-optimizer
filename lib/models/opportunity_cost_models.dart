@@ -92,3 +92,4 @@ class OpportunityCostResult {
     required this.explanation,
   });
 }
+

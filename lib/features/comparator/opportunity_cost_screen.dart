@@ -567,3 +567,4 @@ class OpportunityCostScreen extends ConsumerWidget {
     );
   }
 }
+

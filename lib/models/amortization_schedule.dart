@@ -90,3 +90,4 @@ class LoanAmortizationResult {
   double get baseTotalOutflow => totalPrincipal + baseTotalInterest;
   double get optimizedTotalOutflow => totalPrincipal + optimizedTotalInterest;
 }
+

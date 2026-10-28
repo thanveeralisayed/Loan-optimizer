@@ -115,3 +115,4 @@ class SegmentedControlPill<T> extends StatelessWidget {
     );
   }
 }
+

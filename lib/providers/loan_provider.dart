@@ -133,3 +133,4 @@ final opportunityCostResultProvider = Provider<OpportunityCostResult>((ref) {
   final params = ref.watch(opportunityCostParamsProvider);
   return OpportunityCostEngine.evaluate(loanConfig: config, params: params);
 });
+
