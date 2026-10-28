@@ -1,0 +1,25 @@
+# Design Exports / Stitch Prototype Artifacts
+stitch_modern_aesthetic_ui_redesign/
+
+# Flutter / Dart dependencies and build outputs
+.dart_tool/
+.packages
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# Environment and secrets
+.env*
+!.env.example
+
+# Operating System files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE and Editor configurations
+.idea/
+.vscode/
+*.iml
+*.swp
+*.swo
