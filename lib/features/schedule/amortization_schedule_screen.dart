@@ -340,35 +340,91 @@ class _AmortizationScheduleScreenState
                           padding: const EdgeInsets.symmetric(
                               horizontal: 12, vertical: 8),
                           child: Column(
-                            children: yearSummary.monthlyRows.map((row) {
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 4),
+                            children: [
+                              // Fixed column header
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 6, top: 2),
                                 child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text(
-                                      'M${row.monthIndex} (${DateFormat('MMM').format(row.date)})',
-                                      style: AppTypography.labelSmall.copyWith(
-                                        color: AppColors.onSurfaceVariant,
+                                    SizedBox(
+                                      width: 82,
+                                      child: Text(
+                                        'MONTH',
+                                        style: AppTypography.labelSmall.copyWith(
+                                          fontSize: 9,
+                                          letterSpacing: 0.8,
+                                          color: AppColors.outline,
+                                        ),
                                       ),
                                     ),
-                                    Text(
-                                      'EMI: ${IndianCurrencyFormatter.format(row.emi)}',
-                                      style: AppTypography.bodySmall.copyWith(
-                                        fontSize: 11,
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                                        child: Text(
+                                          'EMI PAYMENT',
+                                          style: AppTypography.labelSmall.copyWith(
+                                            fontSize: 9,
+                                            letterSpacing: 0.8,
+                                            color: AppColors.outline,
+                                          ),
+                                        ),
                                       ),
                                     ),
-                                    Text(
-                                      'Bal: ${IndianCurrencyFormatter.formatCompact(row.closingBalance)}',
-                                      style: AppTypography.labelSmall.copyWith(
-                                        color: AppColors.onSurface,
+                                    SizedBox(
+                                      width: 90,
+                                      child: Text(
+                                        'BALANCE',
+                                        textAlign: TextAlign.right,
+                                        style: AppTypography.labelSmall.copyWith(
+                                          fontSize: 9,
+                                          letterSpacing: 0.8,
+                                          color: AppColors.outline,
+                                        ),
                                       ),
                                     ),
                                   ],
                                 ),
-                              );
-                            }).toList(),
+                              ),
+                              ...yearSummary.monthlyRows.map((row) {
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 4),
+                                  child: Row(
+                                    children: [
+                                      SizedBox(
+                                        width: 82,
+                                        child: Text(
+                                          'M${row.monthIndex} (${DateFormat('MMM').format(row.date)})',
+                                          style: AppTypography.labelSmall.copyWith(
+                                            color: AppColors.onSurfaceVariant,
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                                          child: Text(
+                                            'EMI: ${IndianCurrencyFormatter.format(row.emi)}',
+                                            style: AppTypography.bodySmall.copyWith(
+                                              fontSize: 11,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 90,
+                                        child: Text(
+                                          'Bal: ${IndianCurrencyFormatter.formatCompact(row.closingBalance)}',
+                                          textAlign: TextAlign.right,
+                                          style: AppTypography.labelSmall.copyWith(
+                                            color: AppColors.onSurface,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }),
+                            ],
                           ),
                         ),
                       ],
@@ -389,58 +445,66 @@ class _AmortizationScheduleScreenState
                     border: Border.all(color: AppColors.borderSubtle, width: 1),
                   ),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Month ${row.monthIndex}',
-                            style: AppTypography.labelMedium.copyWith(
-                              fontWeight: FontWeight.w700,
+                      SizedBox(
+                        width: 80,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Month ${row.monthIndex}',
+                              style: AppTypography.labelMedium.copyWith(
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
-                          ),
-                          Text(
-                            DateFormat('MMM yyyy').format(row.date),
-                            style: AppTypography.labelSmall.copyWith(
-                              fontSize: 10,
+                            Text(
+                              DateFormat('MMM yyyy').format(row.date),
+                              style: AppTypography.labelSmall.copyWith(
+                                fontSize: 10,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Principal: ${IndianCurrencyFormatter.format(row.principalPaid)}',
-                            style: AppTypography.bodySmall.copyWith(
-                              fontSize: 11,
-                              color: AppColors.tertiary,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Principal: ${IndianCurrencyFormatter.format(row.principalPaid)}',
+                              style: AppTypography.bodySmall.copyWith(
+                                fontSize: 11,
+                                color: AppColors.tertiary,
+                              ),
                             ),
-                          ),
-                          Text(
-                            'Interest: ${IndianCurrencyFormatter.format(row.interestPaid)}',
-                            style: AppTypography.bodySmall.copyWith(
-                              fontSize: 11,
-                              color: AppColors.error,
+                            Text(
+                              'Interest: ${IndianCurrencyFormatter.format(row.interestPaid)}',
+                              style: AppTypography.bodySmall.copyWith(
+                                fontSize: 11,
+                                color: AppColors.error,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                            'Balance',
-                            style: AppTypography.labelSmall.copyWith(fontSize: 9),
-                          ),
-                          Text(
-                            IndianCurrencyFormatter.formatCompact(row.closingBalance),
-                            style: AppTypography.labelMedium.copyWith(
-                              fontWeight: FontWeight.w700,
+                      SizedBox(
+                        width: 90,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              'Balance',
+                              style: AppTypography.labelSmall.copyWith(fontSize: 9),
                             ),
-                          ),
-                        ],
+                            Text(
+                              IndianCurrencyFormatter.formatCompact(row.closingBalance),
+                              textAlign: TextAlign.right,
+                              style: AppTypography.labelMedium.copyWith(
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
